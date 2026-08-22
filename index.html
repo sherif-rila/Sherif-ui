@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Instagram Direct</title>
-    <!-- PeerJS for Direct Real-Time Connection -->
-    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
         * {
@@ -72,32 +74,21 @@
             font-weight: bold;
         }
 
-        .username-text {
-            font-size: 14px;
-            font-weight: 600;
-        }
+        .username-text { font-size: 14px; font-weight: 600; }
+        .user-status { font-size: 11px; color: #a8a8a8; }
 
-        .user-status {
-            font-size: 11px;
-            color: #a8a8a8;
-        }
-
-        /* Connection & Username Setup Panel */
-        .setup-panel {
+        .username-setup-bar {
             background-color: #121212;
-            padding: 12px 16px;
+            padding: 10px 16px;
             border-bottom: 1px solid #262626;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 4px;
         }
 
-        .input-row {
-            display: flex;
-            gap: 8px;
-        }
+        .username-input-group { display: flex; gap: 8px; }
 
-        .input-row input {
+        .username-input-group input {
             flex: 1;
             background: #262626;
             border: none;
@@ -108,7 +99,7 @@
             outline: none;
         }
 
-        .input-row button {
+        .username-input-group button {
             background: #0095f6;
             border: none;
             color: #fff;
@@ -119,12 +110,6 @@
             cursor: pointer;
         }
 
-        .status-text {
-            font-size: 11px;
-            color: #ff7eb3;
-        }
-
-        /* Chat Scroll Area */
         .chat-messages-area {
             flex: 1;
             padding: 16px;
@@ -142,14 +127,8 @@
             max-width: 75%;
         }
 
-        .msg-row.sent {
-            align-self: flex-end;
-            flex-direction: row-reverse;
-        }
-
-        .msg-row.received {
-            align-self: flex-start;
-        }
+        .msg-row.sent { align-self: flex-end; flex-direction: row-reverse; }
+        .msg-row.received { align-self: flex-start; }
 
         .msg-bubble {
             padding: 10px 16px;
@@ -171,11 +150,7 @@
             border-bottom-left-radius: 4px;
         }
 
-        .sender-tag {
-            font-size: 10px;
-            color: #a8a8a8;
-            margin-bottom: 2px;
-        }
+        .sender-tag { font-size: 10px; color: #a8a8a8; margin-bottom: 2px; }
 
         .unsend-btn {
             background: none;
@@ -187,11 +162,8 @@
             transition: opacity 0.2s ease;
         }
 
-        .msg-row:hover .unsend-btn {
-            opacity: 1;
-        }
+        .msg-row:hover .unsend-btn { opacity: 1; }
 
-        /* Footer Input Bar */
         .insta-footer {
             padding: 12px 16px;
             background-color: #000;
@@ -236,28 +208,20 @@
             <div class="profile-pic"><div>RS</div></div>
             <div>
                 <div class="username-text">rilasherif</div>
-                <div class="user-status" id="liveStatus">🔴 Disconnected</div>
+                <div class="user-status">🟢 Active Live</div>
             </div>
         </div>
     </div>
 
-    <!-- Setup Area -->
-    <div class="setup-panel">
-        <div class="input-row" id="usernameArea">
-            <input type="text" id="usernameInput" placeholder="Enter Your Username...">
-            <button onclick="saveUsername()">Save</button>
+    <div class="username-setup-bar">
+        <div id="usernameControlArea" class="username-input-group">
+            <input type="text" id="usernameInput" placeholder="Set Username...">
+            <button onclick="saveUsername()">Set</button>
         </div>
-        <div class="input-row">
-            <input type="text" id="peerIdInput" placeholder="Paste Partner's ID to connect...">
-            <button onclick="connectToPartner()">Connect</button>
-        </div>
-        <div class="status-text" id="myIdDisplay">My Connection ID: Creating...</div>
     </div>
 
-    <!-- Chat Messages Container -->
     <div class="chat-messages-area" id="chatMessages"></div>
 
-    <!-- Input Bar -->
     <div class="insta-footer">
         <div class="input-box-wrapper">
             <input type="text" id="messageInput" placeholder="Message..." onkeydown="if(event.key==='Enter') sendMessage()">
@@ -267,115 +231,91 @@
 </div>
 
 <script>
-    let peer = new Peer();
-    let conn = null;
+    // ⚠️ REPLACE THIS WITH YOUR FIREBASE CONFIG
+    const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_PROJECT.firebaseapp.com",
+        databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+        projectId: "YOUR_PROJECT",
+        storageBucket: "YOUR_PROJECT.appspot.com",
+        messagingSenderId: "YOUR_ID",
+        appId: "YOUR_APP_ID"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+    const chatRef = database.ref("insta_messages");
+
     let currentUsername = localStorage.getItem("insta_username") || "";
 
-    // 1. Peer Setup & ID Generation
-    peer.on('open', (id) => {
-        document.getElementById("myIdDisplay").innerText = `Your ID: ${id} (Share this with partner)`;
-    });
-
-    // Handle Incoming Connection
-    peer.on('connection', (connection) => {
-        conn = connection;
-        setupConnection();
-    });
-
-    // 2. Connect to Partner ID
-    function connectToPartner() {
-        const partnerId = document.getElementById("peerIdInput").value.trim();
-        if (partnerId) {
-            conn = peer.connect(partnerId);
-            setupConnection();
-        }
-    }
-
-    function setupConnection() {
-        conn.on('open', () => {
-            document.getElementById("liveStatus").innerText = "🟢 Active Now";
-            document.getElementById("liveStatus").style.color = "#00ea90";
-        });
-
-        conn.on('data', (data) => {
-            if (data.type === 'CHAT') {
-                renderMessage(data.id, data.sender, data.text, false);
-            } else if (data.type === 'DELETE') {
-                const el = document.getElementById(data.id);
-                if (el) el.remove();
-            }
-        });
-    }
-
-    // Username Save Logic
     function saveUsername() {
         const val = document.getElementById("usernameInput").value.trim();
         if (val) {
             currentUsername = val;
             localStorage.setItem("insta_username", val);
-            document.getElementById("usernameArea").innerHTML = `<span style="font-weight:600; font-size:13px;">User: <span style="color:#e83377;">@${currentUsername}</span></span>`;
+            renderUsernameUI();
         }
     }
 
-    if (currentUsername) {
-        document.getElementById("usernameArea").innerHTML = `<span style="font-weight:600; font-size:13px;">User: <span style="color:#e83377;">@${currentUsername}</span></span>`;
+    function renderUsernameUI() {
+        if (currentUsername) {
+            document.getElementById("usernameControlArea").innerHTML = `<span style="font-size:13px;">Logged as: <b style="color:#e83377;">@${currentUsername}</b></span>`;
+        }
     }
 
-    // Send Message
+    renderUsernameUI();
+
     function sendMessage() {
         if (!currentUsername) {
             alert("Set your username first!");
             return;
         }
-        if (!conn) {
-            alert("Please connect to your partner using Connection ID first!");
-            return;
-        }
-
         const input = document.getElementById("messageInput");
         const msgText = input.value.trim();
 
         if (msgText !== "") {
-            const msgId = 'msg_' + Date.now();
-            const msgData = { type: 'CHAT', id: msgId, sender: currentUsername, text: msgText };
-
-            conn.send(msgData);
-            renderMessage(msgId, currentUsername, msgText, true);
+            chatRef.push({
+                sender: currentUsername,
+                text: msgText,
+                timestamp: Date.now()
+            });
             input.value = "";
         }
     }
 
-    // Unsend Message
-    function unsendMessage(msgId) {
+    function unsendMessage(key) {
         if (confirm("Unsend message?")) {
-            if (conn) {
-                conn.send({ type: 'DELETE', id: msgId });
-            }
-            const el = document.getElementById(msgId);
-            if (el) el.remove();
+            chatRef.child(key).remove();
         }
     }
 
-    // Render Message UI
-    function renderMessage(id, sender, text, isMe) {
+    // Realtime Sync Listener
+    chatRef.on("value", (snapshot) => {
         const container = document.getElementById("chatMessages");
-        const msgRow = document.createElement("div");
-        msgRow.className = `msg-row ${isMe ? 'sent' : 'received'}`;
-        msgRow.id = id;
+        container.innerHTML = "";
 
-        const unsendBtnHtml = isMe ? `<button class="unsend-btn" onclick="unsendMessage('${id}')">Unsend</button>` : '';
+        snapshot.forEach((child) => {
+            const key = child.key;
+            const data = child.val();
+            const isMe = data.sender === currentUsername;
 
-        msgRow.innerHTML = `
-            <div class="msg-bubble">
-                <div class="sender-tag">@${sender}</div>
-                <div>${text}</div>
-            </div>
-            ${unsendBtnHtml}
-        `;
+            const msgRow = document.createElement("div");
+            msgRow.className = `msg-row ${isMe ? 'sent' : 'received'}`;
 
-        container.appendChild(msgRow);
+            const unsendBtnHtml = isMe ? `<button class="unsend-btn" onclick="unsendMessage('${key}')">Unsend</button>` : '';
+
+            msgRow.innerHTML = `
+                <div class="msg-bubble">
+                    <div class="sender-tag">@${data.sender}</div>
+                    <div>${data.text}</div>
+                </div>
+                ${unsendBtnHtml}
+            `;
+
+            container.appendChild(msgRow);
+        });
         container.scrollTop = container.scrollHeight;
-    }
+    });
 </script>
 
 </body>
