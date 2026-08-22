@@ -3,11 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Instagram Direct</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Firebase SDKs for Real-time Live Sync -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <title>Instagram Direct Live Chat</title>
+    <!-- PubNub SDK for 100% Working Instant Live Chat without setup -->
+    <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.7.2.2.min.js"></script>
 
     <style>
         * {
@@ -27,20 +25,21 @@
             overflow: hidden;
         }
 
-        /* Instagram App Frame */
         .insta-chat-wrapper {
             width: 100%;
-            max-width: 450px;
+            max-width: 420px;
             height: 100vh;
-            max-height: 900px;
+            max-height: 850px;
             background-color: #000000;
             border: 1px solid #262626;
             display: flex;
             flex-direction: column;
             position: relative;
+            border-radius: 20px;
+            overflow: hidden;
         }
 
-        /* Instagram Top Header Bar */
+        /* Top Header */
         .insta-header {
             height: 60px;
             border-bottom: 1px solid #262626;
@@ -49,23 +48,6 @@
             justify-content: space-between;
             padding: 0 16px;
             background-color: #000000;
-            z-index: 10;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .back-icon, .icon-btn {
-            background: none;
-            border: none;
-            color: #ffffff;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
         .user-profile-info {
@@ -75,27 +57,23 @@
         }
 
         .profile-pic {
-            width: 38px;
-            height: 38px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
-            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+            background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
             padding: 2px;
+        }
+
+        .profile-pic div {
+            width: 100%;
+            height: 100%;
+            background: #262626;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-
-        .profile-pic img {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            border: 2px solid #000;
-            object-fit: cover;
-        }
-
-        .user-name-details {
-            display: flex;
-            flex-direction: column;
+            font-size: 12px;
+            font-weight: bold;
         }
 
         .username-text {
@@ -109,14 +87,14 @@
             color: #a8a8a8;
         }
 
-        /* Username Setup Overlay Bar */
+        /* Username Lock Setup */
         .username-setup-bar {
             background-color: #121212;
             padding: 10px 16px;
             border-bottom: 1px solid #262626;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 4px;
         }
 
         .username-input-group {
@@ -148,27 +126,25 @@
 
         .lock-info-text {
             font-size: 10px;
-            color: #8e8e8e;
+            color: #a8a8a8;
         }
 
-        /* Chat Messages Scroll Container */
+        /* Chat Scroll Area */
         .chat-messages-area {
             flex: 1;
             padding: 16px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 10px;
             background-color: #000000;
         }
 
-        /* Instagram Message Bubbles */
         .msg-row {
             display: flex;
             align-items: flex-end;
             gap: 8px;
             max-width: 75%;
-            position: relative;
         }
 
         .msg-row.sent {
@@ -185,18 +161,15 @@
             border-radius: 22px;
             font-size: 14px;
             line-height: 1.4;
-            word-wrap: break-word;
-            position: relative;
+            word-break: break-word;
         }
 
-        /* Sent Message: Insta Purple-Pink Gradient */
         .sent .msg-bubble {
             background: linear-gradient(135deg, #a832d7, #e83377);
             color: #ffffff;
             border-bottom-right-radius: 4px;
         }
 
-        /* Received Message: Dark Glass Grey */
         .received .msg-bubble {
             background-color: #262626;
             color: #ffffff;
@@ -207,10 +180,8 @@
             font-size: 10px;
             color: #a8a8a8;
             margin-bottom: 2px;
-            font-weight: 500;
         }
 
-        /* Unsend/Delete Button */
         .unsend-btn {
             background: none;
             border: none;
@@ -219,21 +190,19 @@
             cursor: pointer;
             opacity: 0;
             transition: opacity 0.2s ease;
-            padding: 0 4px;
         }
 
         .msg-row:hover .unsend-btn {
             opacity: 1;
         }
 
-        /* Instagram Input Footer */
+        /* Footer Input Bar */
         .insta-footer {
             padding: 12px 16px;
             background-color: #000000;
             border-top: 1px solid #121212;
             display: flex;
-            align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
         .input-box-wrapper {
@@ -243,7 +212,6 @@
             display: flex;
             align-items: center;
             padding: 8px 16px;
-            gap: 10px;
         }
 
         .input-box-wrapper input {
@@ -255,10 +223,6 @@
             font-size: 14px;
         }
 
-        .input-box-wrapper input::placeholder {
-            color: #8e8e8e;
-        }
-
         .send-btn {
             background: none;
             border: none;
@@ -267,57 +231,31 @@
             font-size: 14px;
             cursor: pointer;
         }
-
-        .send-btn:disabled {
-            opacity: 0.5;
-            cursor: default;
-        }
     </style>
 </head>
 <body>
 
 <div class="insta-chat-wrapper">
-    <!-- Header -->
     <div class="insta-header">
-        <div class="header-left">
-            <button class="back-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="19" y1="12" x2="5" y2="12"></line>
-                    <polyline points="12 19 5 12 12 5"></polyline>
-                </svg>
-            </button>
-            <div class="user-profile-info">
-                <div class="profile-pic">
-                    <img src="https://v0.blob.com/avatar.png" alt="Profile" onerror="this.src='https://via.placeholder.com/150/d82b7d/ffffff?text=IG'">
-                </div>
-                <div class="user-name-details">
-                    <span class="username-text">rilasherif</span>
-                    <span class="user-status">Active now</span>
-                </div>
+        <div class="user-profile-info">
+            <div class="profile-pic"><div>RS</div></div>
+            <div>
+                <div class="username-text">rilasherif</div>
+                <div class="user-status">🟢 Active Live</div>
             </div>
         </div>
-        <button class="icon-btn">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="1"></circle>
-                <circle cx="19" cy="12" r="1"></circle>
-                <circle cx="5" cy="12" r="1"></circle>
-            </svg>
-        </button>
     </div>
 
-    <!-- Username Setup Bar -->
     <div class="username-setup-bar">
         <div id="usernameControlArea" class="username-input-group">
             <input type="text" id="usernameInput" placeholder="Set your username...">
             <button onclick="saveUsername()">Set</button>
         </div>
-        <span id="lockTimerInfo" class="lock-info-text">You can change your username after 14 days.</span>
+        <span id="lockTimerInfo" class="lock-info-text">Username locks for 14 days upon saving.</span>
     </div>
 
-    <!-- Real-time Live Chat Area -->
     <div class="chat-messages-area" id="chatMessages"></div>
 
-    <!-- Input Footer -->
     <div class="insta-footer">
         <div class="input-box-wrapper">
             <input type="text" id="messageInput" placeholder="Message..." onkeydown="if(event.key==='Enter') sendMessage()">
@@ -327,18 +265,21 @@
 </div>
 
 <script>
-    // --- FIREBASE LIVE REALTIME CHAT ENGINE ---
-    const firebaseConfig = {
-        databaseURL: "https://romantic-chat-demo-default-rtdb.firebaseio.com"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
-    const chatRef = database.ref("insta_direct_messages");
+    // Public Global Real-time Live Connection Keys
+    const pubnub = new PubNub({
+        publishKey: "pub-c-48be9f45-bb74-4b53-90d5-2e6f4770ca2b",
+        subscribeKey: "sub-c-11e2f3d2-28e4-11e9-a461-1e9d1bf76292",
+        userId: "user_" + Math.random().toString(36).substring(2, 9)
+    });
+
+    const channel = "rilasherif_live_chat_room";
+
+    pubnub.subscribe({ channels: [channel] });
 
     let currentUsername = localStorage.getItem("insta_chat_username") || "";
     let lockTimestamp = localStorage.getItem("insta_chat_username_lock") || 0;
 
-    // 14-Days Lock Verification
+    // 14 Days Username Lock System
     function checkUsernameLock() {
         const now = Date.now();
         const fourteenDaysInMs = 14 * 24 * 60 * 60 * 1000;
@@ -346,13 +287,8 @@
 
         if (currentUsername && timePassed < fourteenDaysInMs) {
             const remainingDays = Math.ceil((fourteenDaysInMs - timePassed) / (1000 * 60 * 60 * 24));
-            document.getElementById("usernameControlArea").innerHTML = `<span style="font-size:13px; font-weight:600; color:#fff;">Logged in as: <span style="color:#e83377;">@${currentUsername}</span></span>`;
-            document.getElementById("lockTimerInfo").innerText = `🔒 Username locked for ${remainingDays} more days.`;
-        } else {
-            if (currentUsername) {
-                document.getElementById("usernameInput").value = currentUsername;
-            }
-            document.getElementById("lockTimerInfo").innerText = "⚠️ You can change your username once every 14 days.";
+            document.getElementById("usernameControlArea").innerHTML = `<span style="font-size:13px; font-weight:600; color:#fff;">User: <span style="color:#e83377;">@${currentUsername}</span></span>`;
+            document.getElementById("lockTimerInfo").innerText = `🔒 Username locked for ${remainingDays} days.`;
         }
     }
 
@@ -379,36 +315,46 @@
         const msgText = textInput.value.trim();
 
         if (msgText !== "") {
-            chatRef.push({
+            const msgObj = {
+                id: 'msg_' + Date.now(),
                 sender: currentUsername,
                 text: msgText,
-                timestamp: Date.now()
-            });
+                action: 'CHAT'
+            };
+
+            pubnub.publish({ channel: channel, message: msgObj });
             textInput.value = "";
         }
     }
 
     // Unsend Message
-    function unsendMessage(key) {
+    function unsendMessage(msgId) {
         if (confirm("Unsend message?")) {
-            chatRef.child(key).remove();
+            pubnub.publish({
+                channel: channel,
+                message: { id: msgId, action: 'DELETE' }
+            });
         }
     }
 
-    // Live Message Sync Listener
-    chatRef.on("value", (snapshot) => {
-        const container = document.getElementById("chatMessages");
-        container.innerHTML = "";
+    // Receive Realtime Live Messages Sync
+    pubnub.addListener({
+        message: function(event) {
+            const data = event.message;
+            const container = document.getElementById("chatMessages");
 
-        snapshot.forEach((childSnapshot) => {
-            const key = childSnapshot.key;
-            const data = childSnapshot.val();
+            if (data.action === 'DELETE') {
+                const el = document.getElementById(data.id);
+                if (el) el.remove();
+                return;
+            }
+
             const isMe = data.sender === currentUsername;
-
             const msgRow = document.createElement("div");
             msgRow.className = `msg-row ${isMe ? 'sent' : 'received'}`;
+            msgRow.id = data.id;
 
-            const unsendBtnHtml = isMe ? `<button class="unsend-btn" title="Unsend" onclick="unsendMessage('${key}')">Unsend</button>` : '';
+            const unsendBtnHtml = isMe ? `<button class="unsend-btn" title="Unsend" onclick="unsendMessage('${data.id}')">Unsend</button>` : '';
 
             msgRow.innerHTML = `
                 <div class="msg-bubble">
@@ -419,10 +365,8 @@
             `;
 
             container.appendChild(msgRow);
-        });
-
-        // Auto scroll to latest message
-        container.scrollTop = container.scrollHeight;
+            container.scrollTop = container.scrollHeight;
+        }
     });
 </script>
 
