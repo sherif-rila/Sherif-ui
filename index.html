@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SHERIF • User Panel</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family:Arial, sans-serif;
+}
+
+body{
+  background:#0b0b10;
+  color:#fff;
+  min-height:100vh;
+}
+
+header{
+  padding:20px;
+  text-align:center;
+  font-size:28px;
+  font-weight:800;
+  letter-spacing:4px;
+  border-bottom:1px solid #292934;
+  background:#111118;
+}
+
+.container{
+  max-width:900px;
+  margin:auto;
+  padding:20px;
+}
+
+.tabs{
+  display:flex;
+  gap:8px;
+  overflow-x:auto;
+  margin-bottom:20px;
+}
+
+.tab{
+  border:0;
+  background:#181820;
+  color:#aaa;
+  padding:12px 20px;
+  border-radius:12px;
+  cursor:pointer;
+  white-space:nowrap;
+}
+
+.tab.active{
+  background:#fff;
+  color:#000;
+}
+
+.search{
+  width:100%;
+  padding:15px;
+  border:1px solid #292934;
+  border-radius:14px;
+  outline:none;
+  background:#15151d;
+  color:white;
+  margin-bottom:18px;
+}
+
+.user-card{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  background:#15151d;
+  border:1px solid #252531;
+  padding:14px;
+  border-radius:16px;
+  margin-bottom:10px;
+}
+
+.avatar{
+  width:48px;
+  height:48px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);
+  font-weight:bold;
+}
+
+.info{
+  flex:1;
+}
+
+.info b{
+  display:block;
+  margin-bottom:4px;
+}
+
+.info span{
+  color:#777;
+  font-size:13px;
+}
+
+.follow{
+  border:0;
+  background:#fff;
+  color:#000;
+  padding:9px 15px;
+  border-radius:10px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.follow.following{
+  background:#292934;
+  color:#fff;
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-bottom:20px;
+}
+
+.stat{
+  background:#15151d;
+  padding:20px;
+  border-radius:15px;
+  text-align:center;
+  border:1px solid #252531;
+}
+
+.stat strong{
+  display:block;
+  font-size:24px;
+}
+
+.stat span{
+  color:#777;
+  font-size:12px;
+}
+
+.page{
+  display:none;
+}
+
+.page.active{
+  display:block;
+}
+
+.empty{
+  text-align:center;
+  padding:60px 10px;
+  color:#777;
+}
+
+@media(max-width:600px){
+  .container{
+    padding:14px;
+  }
+
+  .stats strong{
+    font-size:19px;
+  }
+
+  .follow{
+    padding:8px 11px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>SHERIF</header>
+
+<div class="container">
+
+  <div class="tabs">
+    <button class="tab active" onclick="showPage('home',this)">Home</button>
+    <button class="tab" onclick="showPage('users',this)">Users</button>
+    <button class="tab" onclick="showPage('follow',this)">Follow</button>
+    <button class="tab" onclick="showPage('settings',this)">Settings</button>
+  </div>
+
+  <!-- HOME -->
+  <section id="home" class="page active">
+    <div class="stats">
+      <div class="stat">
+        <strong>100</strong>
+        <span>Users</span>
+      </div>
+      <div class="stat">
+        <strong id="followingCount">0</strong>
+        <span>Following</span>
+      </div>
+      <div class="stat">
+        <strong>SHERIF</strong>
+        <span>Panel</span>
+      </div>
+    </div>
+
+    <div class="empty">
+      <h2>Welcome to SHERIF</h2>
+      <p>Simple user interface</p>
+    </div>
+  </section>
+
+  <!-- USERS -->
+  <section id="users" class="page">
+    <input
+      class="search"
+      id="search"
+      placeholder="Search username..."
+      oninput="searchUsers()"
+    >
+
+    <div id="userList"></div>
+  </section>
+
+  <!-- FOLLOW -->
+  <section id="follow" class="page">
+    <div class="empty">
+      <h2>Follow</h2>
+      <p>Select users from the Users tab.</p>
+    </div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section id="settings" class="page">
+    <div class="user-card">
+      <div class="info">
+        <b>SHERIF UI</b>
+        <span>Static interface</span>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+const users = [];
+
+for(let i = 1; i <= 100; i++){
+  users.push({
+    username: "user_" + String(i).padStart(3,"0"),
+    following:false
+  });
+}
+
+function renderUsers(list = users){
+  const box = document.getElementById("userList");
+  box.innerHTML = "";
+
+  list.forEach((user,index)=>{
+    const card = document.createElement("div");
+    card.className = "user-card";
+
+    card.innerHTML = `
+      <div class="avatar">
+        ${user.username.substring(5,8)}
+      </div>
+
+      <div class="info">
+        <b>${user.username}</b>
+        <span>Instagram-style user UI</span>
+      </div>
+
+      <button
+        class="follow ${user.following ? "following" : ""}"
+        onclick="toggleFollow(${users.indexOf(user)})">
+        ${user.following ? "Following" : "Follow"}
+      </button>
+    `;
+
+    box.appendChild(card);
+  });
+}
+
+function toggleFollow(index){
+  users[index].following = !users[index].following;
+
+  const count = users.filter(u => u.following).length;
+  document.getElementById("followingCount").textContent = count;
+
+  renderUsers(
+    document.getElementById("search").value
+      ? users.filter(u =>
+          u.username.toLowerCase().includes(
+            document.getElementById("search").value.toLowerCase()
+          )
+        )
+      : users
+  );
+}
+
+function searchUsers(){
+  const value = document.getElementById("search").value.toLowerCase();
+
+  const filtered = users.filter(user =>
+    user.username.toLowerCase().includes(value)
+  );
+
+  renderUsers(filtered);
+}
+
+function showPage(pageId, button){
+  document.querySelectorAll(".page")
+    .forEach(page => page.classList.remove("active"));
+
+  document.getElementById(pageId).classList.add("active");
+
+  document.querySelectorAll(".tab")
+    .forEach(tab => tab.classList.remove("active"));
+
+  button.classList.add("active");
+
+  if(pageId === "users"){
+    renderUsers();
+  }
+}
+</script>
+
+</body>
+</html>
