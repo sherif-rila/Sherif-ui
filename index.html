@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>rilasherif - 3D Love & Live Chat</title>
+    <title>rilasherif - 3D Magical Romantic Journey</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
-    <!-- Three.js for 3D Graphics -->
+    <!-- Three.js Library for 3D Graphics -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <!-- Firebase SDKs for Realtime Online Chat -->
+    <!-- Firebase SDKs for Real-time Chat -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -40,10 +40,11 @@
         .container {
             max-width: 800px;
             margin: 0 auto;
-            background: rgba(20, 15, 38, 0.85);
+            background: rgba(20, 15, 38, 0.75);
             backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border-radius: 28px;
-            box-shadow: 0 20px 50px rgba(255, 42, 117, 0.25);
+            box-shadow: 0 20px 50px rgba(255, 42, 117, 0.25), 0 0 20px rgba(255, 255, 255, 0.1);
             overflow: hidden;
             border: 1.5px solid rgba(255, 182, 193, 0.3);
             color: #fff;
@@ -52,174 +53,320 @@
         }
 
         header {
-            background: linear-gradient(135deg, rgba(255, 42, 117, 0.8), rgba(145, 20, 112, 0.8));
+            background: linear-gradient(135deg, rgba(255, 42, 117, 0.8), rgba(145, 20, 112, 0.8), rgba(255, 82, 82, 0.8));
+            background-size: 200% 200%;
+            animation: gradientShift 6s ease infinite;
+            color: white;
             text-align: center;
-            padding: 35px 20px;
+            padding: 40px 20px;
+            position: relative;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         header h1 {
             font-family: 'Great Vibes', cursive;
-            font-size: 60px;
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.9);
+            font-size: 65px;
+            margin-bottom: 5px;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.9), 0 0 10px rgba(255, 42, 117, 0.8);
+        }
+
+        header p.subtitle {
+            font-size: 14px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .heart-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.95);
+            color: #d81b60;
+            padding: 8px 25px;
+            border-radius: 30px;
+            font-weight: 700;
+            margin-top: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
 
         .insta-container {
             display: flex;
+            flex-wrap: wrap;
             justify-content: center;
             gap: 15px;
-            padding: 18px;
+            padding: 20px;
             background: rgba(255, 255, 255, 0.05);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 999;
         }
 
         .insta-btn {
-            padding: 10px 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 26px;
             background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
             color: #ffffff !important;
             text-decoration: none;
             font-weight: 600;
+            font-size: 15px;
             border-radius: 30px;
-            box-shadow: 0 4px 15px rgba(220, 39, 67, 0.4);
-            transition: 0.3s;
+            box-shadow: 0 6px 20px rgba(220, 39, 67, 0.4);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            z-index: 1000;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
         .insta-btn:hover {
-            transform: scale(1.05);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(220, 39, 67, 0.6);
         }
 
         .nav-tabs {
             display: flex;
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            overflow-x: auto;
         }
 
         .tab-btn {
             flex: 1;
-            padding: 16px;
+            padding: 18px;
             text-align: center;
             font-weight: 600;
             color: #e0b0ff;
             cursor: pointer;
             border: none;
             background: transparent;
-            font-size: 14px;
-            transition: 0.3s;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            white-space: nowrap;
         }
 
         .tab-btn.active {
-            background: rgba(255, 42, 117, 0.3);
+            background: rgba(255, 42, 117, 0.2);
             color: #ff7eb3;
             border-bottom: 3px solid #ff2a75;
         }
 
         .content-section {
-            padding: 25px;
+            padding: 30px;
             display: none;
         }
 
         .content-section.active {
             display: block;
+            animation: fadeIn 0.5s ease;
         }
 
-        /* LIVE CHAT STYLES */
-        .chat-box {
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 16px;
-            padding: 15px;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .user-setup {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
+        .story-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 4px solid #ff2a75;
+            padding: 22px;
+            margin-bottom: 22px;
+            border-radius: 0 16px 16px 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            backdrop-filter: blur(5px);
         }
 
-        .user-setup input {
-            flex: 1;
-            padding: 10px 15px;
+        .story-card h2 {
+            color: #ff7eb3;
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+
+        .story-card p {
+            line-height: 1.8;
+            font-size: 15px;
+            color: #e2d9f3;
+        }
+
+        .quote-box {
+            text-align: center;
+            padding: 25px;
+            background: linear-gradient(135deg, rgba(255, 117, 140, 0.3), rgba(255, 126, 179, 0.3));
+            border: 1px solid rgba(255, 182, 193, 0.3);
+            color: white;
+            border-radius: 18px;
+            margin: 22px 0;
+            font-style: italic;
+            font-size: 17px;
+            box-shadow: 0 8px 25px rgba(255, 117, 140, 0.2);
+        }
+
+        /* INSTAGRAM STYLE CHAT STYLES */
+        .chat-container {
+            background: rgba(15, 10, 25, 0.85);
             border-radius: 20px;
-            border: none;
-            outline: none;
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 480px;
         }
 
-        #messages-container {
-            height: 250px;
+        .username-bar {
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .username-bar input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            color: #fff;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .username-bar button {
+            background: #ff2a75;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .user-lock-info {
+            font-size: 12px;
+            color: #ff7eb3;
+            font-style: italic;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 12px;
-            margin-bottom: 15px;
+            gap: 12px;
         }
 
-        .msg-bubble {
-            max-width: 75%;
-            padding: 10px 14px;
-            border-radius: 16px;
-            font-size: 14px;
-            word-wrap: break-word;
+        .message-row {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            max-width: 80%;
         }
 
-        .msg-me {
+        .message-row.sent {
             align-self: flex-end;
-            background: linear-gradient(135deg, #ff2a75, #ff7eb3);
-            color: white;
-            border-bottom-right-radius: 2px;
+            flex-direction: row-reverse;
         }
 
-        .msg-other {
+        .message-row.received {
             align-self: flex-start;
-            background: rgba(255, 255, 255, 0.15);
-            color: white;
-            border-bottom-left-radius: 2px;
         }
 
-        .msg-sender {
+        .msg-bubble-insta {
+            padding: 12px 18px;
+            border-radius: 22px;
+            font-size: 14px;
+            line-height: 1.4;
+            word-break: break-word;
+            position: relative;
+        }
+
+        .sent .msg-bubble-insta {
+            background: linear-gradient(135deg, #3753e9, #8d37e9, #d82b7d);
+            color: #fff;
+            border-bottom-right-radius: 4px;
+        }
+
+        .received .msg-bubble-insta {
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+            border-bottom-left-radius: 4px;
+        }
+
+        .msg-sender-name {
             font-size: 10px;
-            opacity: 0.8;
+            opacity: 0.7;
             margin-bottom: 3px;
-            font-weight: bold;
         }
 
-        .input-area {
+        .delete-btn {
+            background: none;
+            border: none;
+            color: #ff4081;
+            cursor: pointer;
+            font-size: 13px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .message-row:hover .delete-btn {
+            opacity: 1;
+        }
+
+        .chat-input-area {
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
             display: flex;
             gap: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .input-area input {
+        .chat-input-area input {
             flex: 1;
-            padding: 12px 18px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 12px 20px;
             border-radius: 25px;
-            border: none;
-            outline: none;
-            background: rgba(255, 255, 255, 0.15);
             color: #fff;
+            outline: none;
         }
 
-        .input-area button {
-            padding: 12px 22px;
-            border-radius: 25px;
-            border: none;
+        .chat-input-area button {
             background: #ff2a75;
             color: white;
-            font-weight: bold;
+            border: none;
+            padding: 12px 22px;
+            border-radius: 25px;
             cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .input-area button:hover {
-            background: #ff5252;
+            font-weight: 600;
         }
 
         footer {
             text-align: center;
-            padding: 15px;
+            padding: 20px;
             background: rgba(10, 5, 20, 0.9);
-            font-size: 13px;
+            color: white;
+            font-size: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        footer span {
+            color: #ff4081;
+            font-weight: 600;
         }
     </style>
 </head>
@@ -230,10 +377,10 @@
 <div class="container">
     <header>
         <h1>rilasherif</h1>
-        <p style="letter-spacing:3px; font-size:12px;">3D ROMANTIC JOURNEY</p>
+        <p class="subtitle">A Magical Journey of Love</p>
+        <div class="heart-badge">Rila 💗 Sherif</div>
     </header>
 
-    <!-- Verified Instagram Handles -->
     <div class="insta-container">
         <a href="https://instagram.com/sh.xrif" target="_blank" rel="noopener noreferrer" class="insta-btn">
             📸 @sh.xrif
@@ -243,45 +390,82 @@
         </a>
     </div>
 
+    <!-- Navigation Tabs -->
     <div class="nav-tabs">
-        <button class="tab-btn active" onclick="openTab(event, 'chat')">💬 Live Chat</button>
-        <button class="tab-btn" onclick="openTab(event, 'story')">📖 Our Story</button>
+        <button class="tab-btn active" onclick="openTab(event, 'chat')">💬 Instagram Chat</button>
+        <button class="tab-btn" onclick="openTab(event, 'story')">📖 How It Began</button>
+        <button class="tab-btn" onclick="openTab(event, 'feelings')">✨ Heartfelt Feelings</button>
+        <button class="tab-btn" onclick="openTab(event, 'future')">🌟 Future Dreams</button>
     </div>
 
-    <!-- Live Online Chat Tab -->
+    <!-- Tab 0: INSTAGRAM CHAT TAB -->
     <div id="chat" class="content-section active">
-        <div class="chat-box">
-            <div class="user-setup">
-                <label style="line-height:35px; font-size:13px;">Your Name:</label>
-                <input type="text" id="usernameInput" value="Rila" placeholder="Enter your name...">
+        <div class="chat-container">
+            <div class="username-bar">
+                <div id="userDisplayArea" style="display: flex; align-items: center; gap: 10px;">
+                    <input type="text" id="usernameInput" placeholder="Enter username...">
+                    <button onclick="saveUsername()">Save</button>
+                </div>
+                <div id="lockTimerInfo" class="user-lock-info"></div>
             </div>
 
-            <div id="messages-container"></div>
+            <div class="chat-messages" id="chatMessages"></div>
 
-            <div class="input-area">
-                <input type="text" id="messageInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter') sendMessage()">
-                <button onclick="sendMessage()">Send 💖</button>
+            <div class="chat-input-area">
+                <input type="text" id="messageInput" placeholder="Message..." onkeydown="if(event.key==='Enter') sendMessage()">
+                <button onclick="sendMessage()">Send</button>
             </div>
         </div>
     </div>
 
-    <!-- Story Tab -->
+    <!-- Tab 1: How It Began -->
     <div id="story" class="content-section">
-        <div style="background:rgba(255,255,255,0.05); padding:20px; border-radius:12px; border-left:4px solid #ff2a75;">
-            <h2 style="color:#ff7eb3; margin-bottom:8px;">Two Hearts, One Journey</h2>
-            <p style="line-height:1.7; font-size:14px; color:#e2d9f3;">
-                A simple connection turned into deep caring and love. Every conversation brings Rila and Sherif closer together every single day.
+        <div class="story-card">
+            <h2>01. Two Hearts, One Connection</h2>
+            <p>Life brings many people into our path, but only a special few stay in our hearts forever. When Rila and Sherif met, a sweet unspoken connection began. A simple smile turned into deep conversations, and slowly, friendship grew into a priceless bond of love.</p>
+        </div>
+
+        <div class="quote-box">
+            "In a sky full of stars, my eyes will always search for you — Rila & Sherif."
+        </div>
+
+        <div class="story-card">
+            <h2>02. Understanding & Care</h2>
+            <p>Love isn't just about big moments; it's about checking up on each other, sharing daily smiles, and understanding feelings without saying a single word. Everyday chats and shared laughs make their bond stronger and sweeter.</p>
+        </div>
+    </div>
+
+    <!-- Tab 2: Feelings -->
+    <div id="feelings" class="content-section">
+        <div class="story-card">
+            <h2>Special Memories 💖</h2>
+            <p>
+                🌸 <b>Sweet Conversations:</b> Spending endless hours talking about everything and nothing.<br><br>
+                ☕ <b>Caring For Each Other:</b> Being the comfort zone whenever life gets stressful.<br><br>
+                ✨ <b>Unspoken Trust:</b> Believing in each other's dreams and always standing side by side.
+            </p>
+        </div>
+    </div>
+
+    <!-- Tab 3: Future Dreams -->
+    <div id="future" class="content-section">
+        <div class="story-card">
+            <h2>Looking Ahead Together 🌟</h2>
+            <p>
+                ✨ To always keep each other happy and smiling.<br><br>
+                ✨ To support each other's goals and ambitions.<br><br>
+                ✨ To patiently build a beautiful future together, step by step.
             </p>
         </div>
     </div>
 
     <footer>
-        Created with Love for <span style="color:#ff4081;">Rila & Sherif</span>
+        <p>Created with Love for <span>Rila & Sherif</span> | Sweethearts</p>
     </footer>
 </div>
 
 <script>
-    // Tab Handler
+    // Tab Switch Logic
     function openTab(evt, tabName) {
         var i, content, btn;
         content = document.getElementsByClassName("content-section");
@@ -298,79 +482,221 @@
         evt.currentTarget.classList.add("active");
     }
 
-    // --- FIREBASE REALTIME CHAT SETUP ---
-    // Note: Free demo database parameters
+    // --- FIREBASE ONLINE CHAT CONFIGURATION ---
     const firebaseConfig = {
         databaseURL: "https://romantic-chat-demo-default-rtdb.firebaseio.com"
     };
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
-    const chatRef = database.ref("messages");
+    const chatRef = database.ref("insta_messages");
 
-    function sendMessage() {
-        const username = document.getElementById("usernameInput").value.trim() || "Anonymous";
-        const message = document.getElementById("messageInput").value.trim();
+    let currentUsername = localStorage.getItem("chat_username") || "";
+    let lockTimestamp = localStorage.getItem("chat_username_lock_time") || 0;
 
-        if (message !== "") {
-            chatRef.push({
-                sender: username,
-                text: message,
-                timestamp: Date.now()
-            });
-            document.getElementById("messageInput").value = "";
+    function checkUsernameLock() {
+        const now = Date.now();
+        const fourteenDaysInMs = 14 * 24 * 60 * 60 * 1000;
+        const timePassed = now - lockTimestamp;
+
+        if (currentUsername && timePassed < fourteenDaysInMs) {
+            const remainingDays = Math.ceil((fourteenDaysInMs - timePassed) / (1000 * 60 * 60 * 24));
+            document.getElementById("userDisplayArea").innerHTML = `<span style="font-weight:600; font-size:15px; color:#ff7eb3;">👤 @${currentUsername}</span>`;
+            document.getElementById("lockTimerInfo").innerText = `🔒 Username locked (${remainingDays} days left to change)`;
+        } else {
+            if (currentUsername) {
+                document.getElementById("usernameInput").value = currentUsername;
+            }
+            document.getElementById("lockTimerInfo").innerText = "⚠️ You can change username once every 14 days.";
         }
     }
 
-    // Listen to live messages online
-    chatRef.limitToLast(30).on("child_added", (snapshot) => {
-        const data = snapshot.val();
-        const myName = document.getElementById("usernameInput").value.trim();
-        const container = document.getElementById("messages-container");
+    function saveUsername() {
+        const inputVal = document.getElementById("usernameInput").value.trim();
+        if (inputVal !== "") {
+            currentUsername = inputVal;
+            lockTimestamp = Date.now();
+            localStorage.setItem("chat_username", currentUsername);
+            localStorage.setItem("chat_username_lock_time", lockTimestamp);
+            checkUsernameLock();
+        }
+    }
 
-        const msgDiv = document.createElement("div");
-        const isMe = data.sender === myName;
-        msgDiv.className = `msg-bubble ${isMe ? 'msg-me' : 'msg-other'}`;
+    checkUsernameLock();
 
-        msgDiv.innerHTML = `
-            <div class="msg-sender">${data.sender}</div>
-            <div>${data.text}</div>
-        `;
+    // Send Message Logic
+    function sendMessage() {
+        if (!currentUsername) {
+            alert("Please set a username first!");
+            return;
+        }
+        const textInput = document.getElementById("messageInput");
+        const messageText = textInput.value.trim();
 
-        container.appendChild(msgDiv);
-        container.scrollTop = container.scrollHeight;
+        if (messageText !== "") {
+            chatRef.push({
+                sender: currentUsername,
+                text: messageText,
+                timestamp: Date.now()
+            });
+            textInput.value = "";
+        }
+    }
+
+    // Delete / Unsend Message Logic
+    function deleteMessage(key) {
+        if (confirm("Do you want to unsend this message?")) {
+            chatRef.child(key).remove();
+        }
+    }
+
+    // Real-time Messages Listener
+    chatRef.on("value", (snapshot) => {
+        const messagesContainer = document.getElementById("chatMessages");
+        messagesContainer.innerHTML = "";
+
+        snapshot.forEach((childSnapshot) => {
+            const key = childSnapshot.key;
+            const data = childSnapshot.val();
+            const isMe = data.sender === currentUsername;
+
+            const row = document.createElement("div");
+            row.className = `message-row ${isMe ? 'sent' : 'received'}`;
+
+            let deleteBtnHtml = isMe ? `<button class="delete-btn" title="Unsend Message" onclick="deleteMessage('${key}')">🗑️</button>` : '';
+
+            row.innerHTML = `
+                <div class="msg-bubble-insta">
+                    <div class="msg-sender-name">@${data.sender}</div>
+                    <div>${data.text}</div>
+                </div>
+                ${deleteBtnHtml}
+            `;
+
+            messagesContainer.appendChild(row);
+        });
+
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
     });
 
-    // --- THREE.JS 3D BACKGROUND ---
+    // --- THREE.JS 3D ENGINE ---
     const canvas = document.getElementById('webgl-bg');
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
 
     renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
     camera.position.z = 30;
 
-    // 3D Particles
-    const geometry = new THREE.BufferGeometry();
-    const count = 300;
-    const positions = new Float32Array(count * 3);
+    // 1. 3D Floating Hearts Creation
+    const heartShape = new THREE.Shape();
+    const x = 0, y = 0;
+    heartShape.moveTo(x + 0.5, y + 0.5);
+    heartShape.bezierCurveTo(x + 0.5, y + 0.5, x + 0.4, y, x, y);
+    heartShape.bezierCurveTo(x - 0.6, y, x - 0.6, y + 0.7, x - 0.6, y + 0.7);
+    heartShape.bezierCurveTo(x - 0.6, y + 1.1, x - 0.3, y + 1.54, x + 0.5, y + 1.9);
+    heartShape.bezierCurveTo(x + 1.3, y + 1.54, x + 1.6, y + 1.1, x + 1.6, y + 0.7);
+    heartShape.bezierCurveTo(x + 1.6, y, x + 1.4, y, x + 0.5, y + 0.5);
 
-    for(let i=0; i<count*3; i++) {
-        positions[i] = (Math.random() - 0.5) * 80;
+    const extrudeSettings = { depth: 0.4, bevelEnabled: true, bevelSegments: 3, steps: 1, bevelSize: 0.1, bevelThickness: 0.1 };
+    const heartGeometry = new THREE.ExtrudeGeometry(heartShape, extrudeSettings);
+
+    const heartMaterial = new THREE.MeshPhongMaterial({
+        color: 0xff2a75,
+        emissive: 0x880e4f,
+        shininess: 100,
+        side: THREE.DoubleSide
+    });
+
+    const heartsGroup = new THREE.Group();
+    const hearts = [];
+
+    for (let i = 0; i < 35; i++) {
+        const mesh = new THREE.Mesh(heartGeometry, heartMaterial);
+        mesh.position.x = (Math.random() - 0.5) * 80;
+        mesh.position.y = (Math.random() - 0.5) * 80;
+        mesh.position.z = (Math.random() - 0.5) * 50;
+        
+        const scale = Math.random() * 0.8 + 0.4;
+        mesh.scale.set(scale, scale, scale);
+        mesh.rotation.x = Math.PI;
+        mesh.rotation.y = Math.random() * Math.PI;
+
+        mesh.userData = {
+            speedY: Math.random() * 0.05 + 0.02,
+            rotSpeedX: (Math.random() - 0.5) * 0.02,
+            rotSpeedY: (Math.random() - 0.5) * 0.02
+        };
+
+        hearts.push(mesh);
+        heartsGroup.add(mesh);
     }
-    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    scene.add(heartsGroup);
 
-    const material = new THREE.PointsMaterial({ color: 0xff2a75, size: 0.8 });
-    const points = new THREE.Points(geometry, material);
-    scene.add(points);
+    // 2. 3D Stars Field
+    const starsGeometry = new THREE.BufferGeometry();
+    const starsCount = 600;
+    const starPositions = new Float32Array(starsCount * 3);
 
+    for (let i = 0; i < starsCount * 3; i++) {
+        starPositions[i] = (Math.random() - 0.5) * 120;
+    }
+
+    starsGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+    const starsMaterial = new THREE.PointsMaterial({
+        color: 0xffb6c1,
+        size: 0.6,
+        transparent: true,
+        opacity: 0.8
+    });
+    const starField = new THREE.Points(starsGeometry, starsMaterial);
+    scene.add(starField);
+
+    // Lighting
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+    scene.add(ambientLight);
+
+    const pointLight = new THREE.PointLight(0xff2a75, 2, 100);
+    pointLight.position.set(10, 20, 20);
+    scene.add(pointLight);
+
+    // Mouse Parallax Effect
+    let mouseX = 0, mouseY = 0;
+    window.addEventListener('mousemove', (e) => {
+        mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+        mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+    });
+
+    // Animation Loop
     function animate() {
         requestAnimationFrame(animate);
-        points.rotation.y += 0.002;
-        points.rotation.x += 0.001;
+
+        // Hearts movement
+        hearts.forEach(heart => {
+            heart.position.y += heart.userData.speedY;
+            heart.rotation.x += heart.userData.rotSpeedX;
+            heart.rotation.y += heart.userData.rotSpeedY;
+
+            if (heart.position.y > 40) {
+                heart.position.y = -40;
+                heart.position.x = (Math.random() - 0.5) * 80;
+            }
+        });
+
+        // Parallax Camera Smooth Rotation
+        camera.position.x += (mouseX * 5 - camera.position.x) * 0.05;
+        camera.position.y += (-mouseY * 5 - camera.position.y) * 0.05;
+        camera.lookAt(scene.position);
+
+        starField.rotation.y += 0.0005;
+
         renderer.render(scene, camera);
     }
+
     animate();
 
+    // Window Resize Handler
     window.addEventListener('resize', () => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
