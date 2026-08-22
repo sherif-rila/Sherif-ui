@@ -3,314 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Instagram Direct</title>
-    <!-- Free Live WebSockets Relay Engine -->
-    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
-
+    <title>WhatsApp Web - Global Phone Chat</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body { background-color: #111b21; color: #e9edef; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        
+        .app-container { width: 100%; max-width: 450px; height: 100vh; max-height: 850px; background-color: #111b21; border: 1px solid #222d34; display: flex; flex-direction: column; position: relative; border-radius: 12px; overflow: hidden; }
 
-        body {
-            background-color: #000;
-            color: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
+        /* AUTH SCREEN */
+        .auth-screen { position: absolute; inset: 0; background-color: #111b21; z-index: 10; display: flex; flex-direction: column; justify-content: center; padding: 30px; text-align: center; }
+        .auth-screen h2 { color: #00a884; margin-bottom: 8px; font-size: 22px; }
+        .auth-screen p { color: #8696a0; font-size: 13px; margin-bottom: 24px; }
+        
+        .phone-input-group { display: flex; gap: 8px; margin-bottom: 16px; }
+        .country-select { background: #202c33; color: #e9edef; border: 1px solid #2a3942; border-radius: 8px; padding: 12px; font-size: 14px; outline: none; }
+        .phone-input { flex: 1; background: #202c33; color: #e9edef; border: 1px solid #2a3942; border-radius: 8px; padding: 12px; font-size: 14px; outline: none; }
+        
+        .btn-green { background: #00a884; color: #111b21; border: none; padding: 14px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px; width: 100%; }
+        .btn-green:hover { background: #029071; }
 
-        .insta-chat-wrapper {
-            width: 100%;
-            max-width: 420px;
-            height: 100vh;
-            max-height: 850px;
-            background-color: #000;
-            border: 1px solid #262626;
-            display: flex;
-            flex-direction: column;
-            border-radius: 20px;
-            overflow: hidden;
-        }
+        .otp-box { display: none; margin-top: 15px; }
+        .otp-input { width: 100%; background: #202c33; border: 1px solid #00a884; color: #fff; padding: 12px; border-radius: 8px; text-align: center; font-size: 18px; letter-spacing: 5px; margin-bottom: 12px; outline: none; }
 
-        .insta-header {
-            height: 60px;
-            border-bottom: 1px solid #262626;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 16px;
-        }
+        /* CHAT SCREEN */
+        .chat-screen { display: flex; flex-direction: column; height: 100%; }
+        .chat-header { background: #202c33; height: 60px; display: flex; align-items: center; padding: 0 16px; gap: 12px; border-bottom: 1px solid #222d34; }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; background: #6b7c85; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .header-info { flex: 1; }
+        .header-name { font-size: 15px; font-weight: 600; }
+        .header-status { font-size: 11px; color: #00a884; }
 
-        .user-profile-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        .chat-body { flex: 1; background: #0b141a; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+        .msg { max-width: 75%; padding: 8px 12px; border-radius: 8px; font-size: 14px; line-height: 1.4; word-break: break-word; position: relative; }
+        .msg.sent { background: #005c4b; align-self: flex-end; border-top-right-radius: 0; }
+        .msg.received { background: #202c33; align-self: flex-start; border-top-left-radius: 0; }
+        .msg-time { font-size: 10px; color: #8696a0; text-align: right; margin-top: 4px; }
 
-        .profile-pic {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
-            padding: 2px;
-        }
-
-        .profile-pic div {
-            width: 100%;
-            height: 100%;
-            background: #262626;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .username-text { font-size: 14px; font-weight: 600; }
-        .user-status { font-size: 11px; color: #a8a8a8; }
-
-        .username-setup-bar {
-            background-color: #121212;
-            padding: 10px 16px;
-            border-bottom: 1px solid #262626;
-            display: flex;
-            gap: 8px;
-        }
-
-        .username-setup-bar input {
-            flex: 1;
-            background: #262626;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 8px;
-            color: #fff;
-            font-size: 13px;
-            outline: none;
-        }
-
-        .username-setup-bar button {
-            background: #0095f6;
-            border: none;
-            color: #fff;
-            font-weight: 600;
-            font-size: 12px;
-            padding: 0 14px;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        .chat-messages-area {
-            flex: 1;
-            padding: 16px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            background-color: #000;
-        }
-
-        .msg-row {
-            display: flex;
-            align-items: flex-end;
-            gap: 8px;
-            max-width: 75%;
-        }
-
-        .msg-row.sent { align-self: flex-end; flex-direction: row-reverse; }
-        .msg-row.received { align-self: flex-start; }
-
-        .msg-bubble {
-            padding: 10px 16px;
-            border-radius: 22px;
-            font-size: 14px;
-            line-height: 1.4;
-            word-break: break-word;
-        }
-
-        .sent .msg-bubble {
-            background: linear-gradient(135deg, #a832d7, #e83377);
-            color: #fff;
-            border-bottom-right-radius: 4px;
-        }
-
-        .received .msg-bubble {
-            background-color: #262626;
-            color: #fff;
-            border-bottom-left-radius: 4px;
-        }
-
-        .sender-tag { font-size: 10px; color: #a8a8a8; margin-bottom: 2px; }
-
-        .unsend-btn {
-            background: none;
-            border: none;
-            color: #ed4956;
-            font-size: 11px;
-            cursor: pointer;
-            opacity: 0;
-            transition: opacity 0.2s ease;
-        }
-
-        .msg-row:hover .unsend-btn { opacity: 1; }
-
-        .insta-footer {
-            padding: 12px 16px;
-            background-color: #000;
-            border-top: 1px solid #121212;
-            display: flex;
-            gap: 10px;
-        }
-
-        .input-box-wrapper {
-            flex: 1;
-            background-color: #262626;
-            border-radius: 25px;
-            display: flex;
-            align-items: center;
-            padding: 8px 16px;
-        }
-
-        .input-box-wrapper input {
-            flex: 1;
-            background: transparent;
-            border: none;
-            outline: none;
-            color: #fff;
-            font-size: 14px;
-        }
-
-        .send-btn {
-            background: none;
-            border: none;
-            color: #0095f6;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-        }
+        .chat-footer { background: #202c33; padding: 10px 16px; display: flex; align-items: center; gap: 10px; }
+        .chat-footer input { flex: 1; background: #2a3942; border: none; color: #e9edef; padding: 11px 16px; border-radius: 8px; font-size: 14px; outline: none; }
+        .send-icon { background: #00a884; border: none; width: 40px; height: 40px; border-radius: 50%; color: #111b21; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div class="insta-chat-wrapper">
-    <div class="insta-header">
-        <div class="user-profile-info">
-            <div class="profile-pic"><div>RS</div></div>
-            <div>
-                <div class="username-text">rilasherif</div>
-                <div class="user-status" id="connectionStatus">🟡 Connecting...</div>
+<div class="app-container">
+    <!-- AUTH SCREEN -->
+    <div class="auth-screen" id="authScreen">
+        <h2>WhatsApp</h2>
+        <p>Enter your phone number to verify your account globally.</p>
+
+        <div class="phone-input-group">
+            <select class="country-select" id="countryCode">
+                <option value="+94">🇱🇰 +94</option>
+                <option value="+91">🇮🇳 +91</option>
+                <option value="+971">🇦🇪 +971</option>
+                <option value="+1">🇺🇸 +1</option>
+                <option value="+44">🇬🇧 +4UK</option>
+            </select>
+            <input type="tel" class="phone-input" id="phoneNum" placeholder="Mobile Number">
+        </div>
+
+        <button class="btn-green" id="sendOtpBtn" onclick="sendOTP()">Request OTP</button>
+
+        <div class="otp-box" id="otpBox">
+            <input type="text" class="otp-input" id="otpInput" maxlength="6" placeholder="0 0 0 0 0 0">
+            <button class="btn-green" onclick="verifyOTP()">Verify & Login</button>
+        </div>
+    </div>
+
+    <!-- MAIN CHAT SCREEN -->
+    <div class="chat-screen">
+        <div class="chat-header">
+            <div class="avatar">WA</div>
+            <div class="header-info">
+                <div class="header-name" id="userDisplay">Global Chat Room</div>
+                <div class="header-status">online</div>
             </div>
         </div>
-    </div>
 
-    <div class="username-setup-bar" id="userArea">
-        <input type="text" id="usernameInput" placeholder="Enter Your Username...">
-        <button onclick="saveUsername()">Set</button>
-    </div>
-
-    <div class="chat-messages-area" id="chatMessages"></div>
-
-    <div class="insta-footer">
-        <div class="input-box-wrapper">
-            <input type="text" id="messageInput" placeholder="Message..." onkeydown="if(event.key==='Enter') sendMessage()">
+        <div class="chat-body" id="chatBody">
+            <div class="msg received">
+                Welcome to WhatsApp Web Global! Enter your mobile number to test the interface.
+                <div class="msg-time">12:00 PM</div>
+            </div>
         </div>
-        <button class="send-btn" onclick="sendMessage()">Send</button>
+
+        <div class="chat-footer">
+            <input type="text" id="msgInput" placeholder="Type a message" onkeydown="if(event.key==='Enter') sendMsg()">
+            <button class="send-icon" onclick="sendMsg()">➤</button>
+        </div>
     </div>
 </div>
 
 <script>
-    // Free Public Global Live Server (Zero Config Needed)
-    const client = mqtt.connect('wss://broker.emqx.io:8084/mqtt');
-    const topic = 'rilasherif_secret_chat_room_2026';
+    let generatedOTP = null;
+    let fullPhone = "";
 
-    let currentUsername = localStorage.getItem("insta_username") || "";
-
-    client.on('connect', () => {
-        document.getElementById("connectionStatus").innerText = "🟢 Active Live";
-        document.getElementById("connectionStatus").style.color = "#00ea90";
-        client.subscribe(topic);
-    });
-
-    function saveUsername() {
-        const val = document.getElementById("usernameInput").value.trim();
-        if (val) {
-            currentUsername = val;
-            localStorage.setItem("insta_username", val);
-            renderUsernameUI();
-        }
-    }
-
-    function renderUsernameUI() {
-        if (currentUsername) {
-            document.getElementById("userArea").innerHTML = `<span style="font-size:13px;">Logged as: <b style="color:#e83377;">@${currentUsername}</b></span>`;
-        }
-    }
-
-    renderUsernameUI();
-
-    function sendMessage() {
-        if (!currentUsername) {
-            alert("Enter your username first!");
+    function sendOTP() {
+        const num = document.getElementById("phoneNum").value.trim();
+        const code = document.getElementById("countryCode").value;
+        if(num.length < 7) {
+            alert("Please enter a valid mobile number!");
             return;
         }
 
-        const input = document.getElementById("messageInput");
-        const msgText = input.value.trim();
+        fullPhone = code + num;
+        generatedOTP = Math.floor(100000 + Math.random() * 900000); // 6 Digit OTP
+        
+        alert(`[Demo SMS Gateway]\nYour Verification Code for ${fullPhone} is: ${generatedOTP}`);
+        
+        document.getElementById("otpBox").style.display = "block";
+        document.getElementById("sendOtpBtn").style.display = "none";
+    }
 
-        if (msgText !== "") {
-            const payload = JSON.stringify({
-                id: 'msg_' + Date.now() + Math.random().toString(36).substr(2, 4),
-                sender: currentUsername,
-                text: msgText,
-                action: 'CHAT'
-            });
-
-            client.publish(topic, payload);
-            input.value = "";
+    function verifyOTP() {
+        const userOtp = document.getElementById("otpInput").value.trim();
+        if(userOtp == generatedOTP) {
+            document.getElementById("authScreen").style.display = "none";
+            document.getElementById("userDisplay").innerText = fullPhone;
+        } else {
+            alert("Invalid OTP Code! Try again.");
         }
     }
 
-    function unsendMessage(id) {
-        if (confirm("Unsend message?")) {
-            const payload = JSON.stringify({ id: id, action: 'DELETE' });
-            client.publish(topic, payload);
-        }
+    function sendMsg() {
+        const input = document.getElementById("msgInput");
+        const text = input.value.trim();
+        if(!text) return;
+
+        const body = document.getElementById("chatBody");
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        const msgDiv = document.createElement("div");
+        msgDiv.className = "msg sent";
+        msgDiv.innerHTML = `${text} <div class="msg-time">${timeStr} ✓✓</div>`;
+
+        body.appendChild(msgDiv);
+        input.value = "";
+        body.scrollTop = body.scrollHeight;
     }
-
-    // Receive Real-time Live Messages
-    client.on('message', (topic, message) => {
-        const data = JSON.parse(message.toString());
-        const container = document.getElementById("chatMessages");
-
-        if (data.action === 'DELETE') {
-            const el = document.getElementById(data.id);
-            if (el) el.remove();
-            return;
-        }
-
-        const isMe = data.sender === currentUsername;
-        const msgRow = document.createElement("div");
-        msgRow.className = `msg-row ${isMe ? 'sent' : 'received'}`;
-        msgRow.id = data.id;
-
-        const unsendBtnHtml = isMe ? `<button class="unsend-btn" onclick="unsendMessage('${data.id}')">Unsend</button>` : '';
-
-        msgRow.innerHTML = `
-            <div class="msg-bubble">
-                <div class="sender-tag">@${data.sender}</div>
-                <div>${data.text}</div>
-            </div>
-            ${unsendBtnHtml}
-        `;
-
-        container.appendChild(msgRow);
-        container.scrollTop = container.scrollHeight;
-    });
 </script>
 
 </body>
