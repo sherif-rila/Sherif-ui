@@ -1,579 +1,382 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>super Car Drive</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1" >
-    </head>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>rilasherif - 3D Love & Live Chat</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
+    <!-- Three.js for 3D Graphics -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Firebase SDKs for Realtime Online Chat -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <style>
-        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #090514;
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
 
-body{
-    margin:0;
-    height:100vh;
-    width:100vw;
-}
+        #webgl-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+        }
 
-#mainContainer {
-    position:absolute;
-    top:0;
-    left:0;
-    transform-origin:0% 0%;
-    width:100%;
-    transform:  translateX(0px) rotate(0deg);
-    overflow: hidden;
-}
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(20, 15, 38, 0.85);
+            backdrop-filter: blur(16px);
+            border-radius: 28px;
+            box-shadow: 0 20px 50px rgba(255, 42, 117, 0.25);
+            overflow: hidden;
+            border: 1.5px solid rgba(255, 182, 193, 0.3);
+            color: #fff;
+            position: relative;
+            z-index: 10;
+        }
 
-#city {
-    position:absolute;
-    top:0;
-    left:0;
-    height:30vw;
-    width:100%;
-    z-index:-1;
-    display: block;
-}
+        header {
+            background: linear-gradient(135deg, rgba(255, 42, 117, 0.8), rgba(145, 20, 112, 0.8));
+            text-align: center;
+            padding: 35px 20px;
+        }
 
-#myCanvas {
-    background:transparent;
-    z-index: 100;
-}
+        header h1 {
+            font-family: 'Great Vibes', cursive;
+            font-size: 60px;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.9);
+        }
 
-.aImg {
-    display:none;
-}
+        .insta-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            padding: 18px;
+            background: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
 
-#mainContainer {
-    display:none;
-}
+        .insta-btn {
+            padding: 10px 24px;
+            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+            color: #ffffff !important;
+            text-decoration: none;
+            font-weight: 600;
+            border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(220, 39, 67, 0.4);
+            transition: 0.3s;
+        }
 
-#scoreDiv {
-    position:absolute;
-    right:0;
-    background:transparent;
-    display:inline-block;
-    border:3px solid red;
-    padding:3px 50px 3px 10px;
-    border-radius:20px;
-    font-weight:700;
-    font-size:24px;
-    height:30px;
-    margin:10px;
-    z-index:1000;
-    transform-origin:100% 0%;
-}
+        .insta-btn:hover {
+            transform: scale(1.05);
+        }
 
-#cn {
-    height:52px;
-    width:52px;
-    background:red;
-    position:absolute;
-    right:-8px;
-    top:-8px;
-    border-radius:50%;
-}
+        .nav-tabs {
+            display: flex;
+            background: rgba(0, 0, 0, 0.3);
+        }
 
-.gameHome {
-    position:absolute;
-    top:0;
-    left:0;
-    background:#fff;
-    height:100vh;
-    width:100vw;
-    transform-origin:0% 0%;
-    text-align:center;
-}
+        .tab-btn {
+            flex: 1;
+            padding: 16px;
+            text-align: center;
+            font-weight: 600;
+            color: #e0b0ff;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            font-size: 14px;
+            transition: 0.3s;
+        }
 
-#gameTitle {
-    text-align:center;
-    font-family:cursive;
-    font-size:35px;
-    margin-top:50px;
-    font-weight:800;
-}
+        .tab-btn.active {
+            background: rgba(255, 42, 117, 0.3);
+            color: #ff7eb3;
+            border-bottom: 3px solid #ff2a75;
+        }
 
-#playBtn {
-    font-size:20px;
-    display:inline-block;
-    background:#1642ea;
-    color:#fff;
-    padding:3px 25px;
-    margin-top: 100px;
-    border:none;
-    border-radius:10px;
-    box-shadow:3px 4px #000;
-    outline:none;
-}
+        .content-section {
+            padding: 25px;
+            display: none;
+        }
 
-#gameConf {
-    width:50%;
-    height:100%;
-    background:red;
-}
+        .content-section.active {
+            display: block;
+        }
 
-#gameDifficulty {
-    width:100%;
-    height:50%;
-    background:blue;
-    padding:0;
-    margin:0;
-}
+        /* LIVE CHAT STYLES */
+        .chat-box {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            padding: 15px;
+        }
 
-.diffOpt {
-    background:green;
-    font-family:cursive;
-    font-size:20px;
-    text-align:center;
-}
+        .user-setup {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
 
-#loading {
-    height:60px;
-    width:60px;
-    background:transparent;
-    display:inline-block;
-    border:10px solid transparent;
-    border-bottom-color:red;
-    border-left-color:red;
-    border-radius:50%;
-    animation:ld 1s linear infinite;
-}
+        .user-setup input {
+            flex: 1;
+            padding: 10px 15px;
+            border-radius: 20px;
+            border: none;
+            outline: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
 
-@keyframes ld {
-    0% {
-        transform:translateY(-165px) rotate(0deg);
-    }
-    100% {
-        transform:translateY(-165px) rotate(360deg);
-    }
-}
+        #messages-container {
+            height: 250px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+
+        .msg-bubble {
+            max-width: 75%;
+            padding: 10px 14px;
+            border-radius: 16px;
+            font-size: 14px;
+            word-wrap: break-word;
+        }
+
+        .msg-me {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #ff2a75, #ff7eb3);
+            color: white;
+            border-bottom-right-radius: 2px;
+        }
+
+        .msg-other {
+            align-self: flex-start;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border-bottom-left-radius: 2px;
+        }
+
+        .msg-sender {
+            font-size: 10px;
+            opacity: 0.8;
+            margin-bottom: 3px;
+            font-weight: bold;
+        }
+
+        .input-area {
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-area input {
+            flex: 1;
+            padding: 12px 18px;
+            border-radius: 25px;
+            border: none;
+            outline: none;
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+        }
+
+        .input-area button {
+            padding: 12px 22px;
+            border-radius: 25px;
+            border: none;
+            background: #ff2a75;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .input-area button:hover {
+            background: #ff5252;
+        }
+
+        footer {
+            text-align: center;
+            padding: 15px;
+            background: rgba(10, 5, 20, 0.9);
+            font-size: 13px;
+        }
     </style>
-    <body onload="done()">
-        <div id="scoreDiv">
-            <span id="score">0</span>
-            <img src="https://image.ibb.co/jRAp0y/coin.png" id="cn">
+</head>
+<body>
+
+<canvas id="webgl-bg"></canvas>
+
+<div class="container">
+    <header>
+        <h1>rilasherif</h1>
+        <p style="letter-spacing:3px; font-size:12px;">3D ROMANTIC JOURNEY</p>
+    </header>
+
+    <!-- Verified Instagram Handles -->
+    <div class="insta-container">
+        <a href="https://instagram.com/sh.xrif" target="_blank" rel="noopener noreferrer" class="insta-btn">
+            📸 @sh.xrif
+        </a>
+        <a href="https://instagram.com/yk.m0i" target="_blank" rel="noopener noreferrer" class="insta-btn">
+            📸 @yk.m0i
+        </a>
+    </div>
+
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="openTab(event, 'chat')">💬 Live Chat</button>
+        <button class="tab-btn" onclick="openTab(event, 'story')">📖 Our Story</button>
+    </div>
+
+    <!-- Live Online Chat Tab -->
+    <div id="chat" class="content-section active">
+        <div class="chat-box">
+            <div class="user-setup">
+                <label style="line-height:35px; font-size:13px;">Your Name:</label>
+                <input type="text" id="usernameInput" value="Rila" placeholder="Enter your name...">
+            </div>
+
+            <div id="messages-container"></div>
+
+            <div class="input-area">
+                <input type="text" id="messageInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter') sendMessage()">
+                <button onclick="sendMessage()">Send 💖</button>
+            </div>
         </div>
-        <div class="gameHome" id="startPage">
-            <div id="gameTitle">3D Car Drive</div>
-            <button onclick="ld()" id="playBtn"><span style="font-size:18px">Loading Assets<br>Please Wait...<br>This may take a few seconds for first time</span></button><br>
-            <div id="ldc"><div id="loading"></div></div>
-            <script type="text/javascript">
-                (function(){
-                    "use strict"
-                    var hw = window.innerWidth || 360;
-                    var hh = window.innerHeight || 560;
-                    var gameHome = document.getElementById("startPage");
-                    var scoreDiv = document.getElementById("scoreDiv");
-                    if(hh > hw){
-                        gameHome.style.height = hw+"px";
-                        gameHome.style.width = hh+"px";
-                        gameHome.style.transform = "translateX("+hw+"px) rotate(90deg)";
-                        scoreDiv.style.bottom = 0;
-                        scoreDiv.style.transform = "rotate(90deg) translateX(40px)";
-                    }
-                })();
-            </script>
+    </div>
+
+    <!-- Story Tab -->
+    <div id="story" class="content-section">
+        <div style="background:rgba(255,255,255,0.05); padding:20px; border-radius:12px; border-left:4px solid #ff2a75;">
+            <h2 style="color:#ff7eb3; margin-bottom:8px;">Two Hearts, One Journey</h2>
+            <p style="line-height:1.7; font-size:14px; color:#e2d9f3;">
+                A simple connection turned into deep caring and love. Every conversation brings Rila and Sherif closer together every single day.
+            </p>
         </div>
-        
-        
-        <div id="mainContainer" style="background:#0f0" >
-            <img id="city" src="https://image.ibb.co/jCGU0y/cty.jpg">
-            <canvas id="myCanvas"  ></canvas>
-        </div>
-        <img class="aImg" id="t1" src="https://image.ibb.co/dZi5Ly/t1.png">
-        <img class="aImg" id="t2" src="https://image.ibb.co/jajjDJ/t2.png">
-        <img class="aImg" id="t3" src="https://image.ibb.co/it4jDJ/t5.png">
-        <img class="aImg" id="t4" src="https://image.ibb.co/ksy0nd/t4.png">
-        <img class="aImg" id="c1" src="https://image.ibb.co/f4v7YJ/c2.png">
-        <script>
-                   
-        var ld;
-        var loaded = false;
-        
-        function done(){
-            document.getElementById("ldc").innerHTML="";
-            document.getElementById("ldc").style.display = "none";
-            document.getElementById("playBtn").innerHTML = "PLAY";
-            loaded = true;
+    </div>
+
+    <footer>
+        Created with Love for <span style="color:#ff4081;">Rila & Sherif</span>
+    </footer>
+</div>
+
+<script>
+    // Tab Handler
+    function openTab(evt, tabName) {
+        var i, content, btn;
+        content = document.getElementsByClassName("content-section");
+        for (i = 0; i < content.length; i++) {
+            content[i].style.display = "none";
+            content[i].classList.remove("active");
         }
-        
-        (function(){
-            var w = window.innerWidth || 360;
-            var h = window.innerHeight || 560;
-        
-            if(h > w){
-                var nh = h;
-                h = w;
-                w = nh;
-                document.getElementById("mainContainer").style.transform = "translateX("+(h)+"px) rotate(90deg)";
-            }
-            document.getElementById("mainContainer").style.width = w+"px";
-            document.getElementById("mainContainer").style.height = h+"px";
-            
-            document.getElementById("city").style.height = h*.3+"px";
-            document.getElementById("city").style.width = w+"px";
-            
-            var c = document.getElementById("myCanvas");
-            c.height = h;
-            c.width = w;
-            
-            var ctx = c.getContext("2d");
-        
-        function loadGame(){
-            "use strict";
-            
-            var roadWidth = 5*w/36;
-            var roadTop = h-h*0.7;
-            var roadLeft = (w-roadWidth)/2;
-            var roadConstant = roadLeft/(h-roadTop);
-            var score = 0;
-            var scoreC = document.getElementById("score");
-            function updateScore(ds){
-                score+=ds;
-                scoreC.textContent = score;
-            }
-            updateScore(0);
-            
-            var rso = [];
-            var ratio = 0.8;
-            var totalRso = 20;
-            var maxHF = h*(1-ratio)/(2.25*(1-Math.pow(ratio,totalRso)));
-            var maxH = maxHF;
-            var totalHeight = 0.7*h;
-            var minWidth = 1;
-            var maxWidth = 26;
-            var dif = maxWidth - minWidth;
-            var changedHeight = totalHeight-maxH*ratio;
-            var cnst1 = Math.pow(ratio,totalRso)/(1-ratio);
-            var stp = h-totalHeight;
-            var tMaxH = h*20/36;
-            var treeCnst = tMaxH/roadLeft;
-            
-            var gameDifficulty = 100;
-            
-            
-            
-            function TreeBuilder(src,src2,start,left){
-                this.src = treeSrc[src];
-                this.src2 = treeSrc[src2];
-                this.y = start;
-                this.x = 0;
-                this.h = 0;
-                this.w = 0;
-                this.dy = 0.01;
-                this.r = 1.009;
-                this.left = left;
-            }
-            
-            TreeBuilder.prototype.draw = function(){
-                this.y += this.dy;
-                this.dy *= this.r;
-                this.x = (h-this.y)*roadConstant - this.w - this.w*this.left;
-                this.h = (roadLeft-this.x-this.w*this.left)*treeCnst;
-                this.w = this.h*2/3;
-                
-                ctx.drawImage(this.src,this.x,this.y-this.h,this.w,this.h);
-                ctx.drawImage(this.src2,w-this.x-this.w,this.y-this.h,this.w,this.h);
-            
-                if(this.y >= h){
-                    this.y = stp;
-                    this.h = 0;
-                    this.w = 0;
-                    this.left = Math.random()*3;
-                    this.dy = 0.5;
-                }
-            }
-            
-            function _i(x){
-                return document.getElementById(x);
-            }
-            var treeSrc = [_i("t1"),_i("t2"),_i("t3"),_i("t4")];
-            
-            var trees = [];
-            for(var n = 0; n < ((h*0.7)/50-2); n++){
-                trees.push(new TreeBuilder(Math.floor(Math.random()*4),Math.floor(Math.random()*4),stp+n*50,2));
-            }
-            
-            
-            var carWCnst = roadLeft*2/totalHeight;
-            var carW = (w > 560) ? 120 : 90;
-            var carH = carW*2/3;
-            
-            function CarBuilder(src,start,lane){
-                this.src = carSrc[src];
-                this.y = start;
-                this.x = 0;
-                this.h = 0;
-                this.w = 0;
-                this.dy = 0.5;
-                this.lane = lane;
-            }
-            
-            CarBuilder.prototype.draw = function(){
-                this.dy *= 1.01;
-                this.y += this.dy;
-                this.x = (carWCnst/2)*(h-this.y)+(w-(carWCnst*(h-this.y)))*this.lane/8;
-                this.w = carW-carW*carWCnst*(h-this.y)/w;
-                this.h = 1.7*this.w/3;
-                
-                ctx.drawImage(this.src,this.x,this.y-this.h,this.w,this.h);
-                if(this.y >= h-20){
-                    if(Math.abs(this.x-cx) <= carH && Math.abs(this.y-h+carH) <= carH){
-                        clearInterval(intv);
-                        setTimeout(function(){
-                            document.getElementById("mainContainer").style.display = "none";
-                            document.getElementById("startPage").style.display = "block";
-                        },1000);
-                    }
-                }
-                if(this.y >= h+100){
-                    this.y = stp;
-                    this.h = 0;
-                    this.w = 0;
-                    this.left = Math.random()*3;
-                    this.dy = 0.5;
-                    this.lane = 1+Math.random()*5;
-                }
-            }
-            
-            var carSrc = [_i("c1"),_i("c1"),_i("c1")];
-            
-            var cars = [];
-            for(var n = 0; n < ((h*0.7+100)/gameDifficulty); n++){
-                cars.push(new CarBuilder(Math.floor(Math.random()*3),stp+n*gameDifficulty,1));
-            }
-            
-            //Coin.....
-            var coinW = (w > 560) ? 75 : 60;
-            function CoinBuilder(start,lane){
-                this.src = coinSrc;
-                this.y = start;
-                this.x = 0;
-                this.h = 0;
-                this.w = 0;
-                this.dy = 0.5;
-                this.lane = lane;
-            }
-            
-            CoinBuilder.prototype.draw = function(){
-                this.dy *= 1.01;
-                this.y += this.dy;
-                this.x = (carWCnst/2)*(h-this.y)+(w-(carWCnst*(h-this.y)))*this.lane/8;
-                this.w = coinW-coinW*carWCnst*(h-this.y)/w;
-                this.h = this.w;
-                
-                ctx.drawImage(this.src,this.x,this.y-this.h,this.w,this.h);
-                if(this.y >= h-20){
-                    if(Math.abs(this.x-cx) <= coinW && Math.abs(this.y-h+coinW) <= coinW){
-                        this.y = stp;
-                        this.h = 0;
-                        this.w = 0;
-                        this.left = Math.random()*3;
-                        this.dy = 0.5;
-                        this.lane = Math.floor(1+Math.random()*5);
-                        updateScore(1);
-                    }
-                }
-                if(this.y >= h+100){
-                    this.y = stp;
-                    this.h = 0;
-                    this.w = 0;
-                    this.left = Math.random()*3;
-                    this.dy = 0.5;
-                    this.lane = Math.floor(1+Math.random()*5);
-                }
-            }
-            
-            var coinSrc = _i("cn");
-            
-            var coins = [];
-            for(var n = 0; n < ((h*0.7+100)/(gameDifficulty-50)); n++){
-                coins.push(new CoinBuilder(stp+n*(gameDifficulty-50),6));
-            }
-            
-            
-            
-            //End Coin...
-            
-            
-            
-            function rectPoints(n,ho){
-                n = totalRso-n-1;
-                var y1 = stp+maxH*cnst1*(Math.pow(1/ratio,n)-1);
-                var x1 = roadLeft-roadConstant*(y1-stp);
-                var y2 = y1;
-                var x2 = x1 + minWidth+(y1-stp)*dif/totalHeight;
-                var y3 = y1 + maxH*cnst1*(Math.pow(1/ratio,n+1)-1);
-                var x3 = roadLeft-roadConstant*(y3-stp);
-                var y4 = y3;
-                var x4 = x3 + minWidth+(y3-stp)*dif/totalHeight;
-                
-                return [x1,y1,x2,y2,x4,y4,x3,y3];
-            }
-            
-            
-            for(var n = 0; n < totalRso; n++){
-                rso.push(rectPoints(n,h));
-                rso[n][8] = (n%2==0) ? "#000" : "#fff";
-            }
-            
-            function draw(){
-                ctx.beginPath();
-                ctx.moveTo((w-roadWidth)/2,stp);
-                ctx.lineTo((w-roadWidth)/2+roadWidth,stp);
-                ctx.lineTo(w,h);
-                ctx.lineTo(0,h);
-                ctx.fillStyle="#555";
-                ctx.fill();
-                ctx.closePath();
-                for(var n = 0; n < totalRso; n++){
-                    ctx.beginPath();
-                    ctx.moveTo(rso[n][0],rso[n][1]);
-                    ctx.lineTo(rso[n][2],rso[n][3]);
-                    ctx.lineTo(rso[n][4],rso[n][5]);
-                    ctx.lineTo(rso[n][6],rso[n][7]);
-                    ctx.lineTo(rso[n][0],rso[n][1]);
-                    ctx.lineWidth = 2;
-                    ctx.fillStyle = rso[n][8];//"rgb("+Math.floor(Math.random()*255)+","+Math.floor(Math.random()*255)+","+Math.floor(Math.random()*255)+")";
-                    ctx.fill();
-                    ctx.closePath();
-                    
-                    ctx.beginPath();
-                    ctx.moveTo(w-rso[n][0],rso[n][1]);
-                    ctx.lineTo(w-rso[n][2],rso[n][3]);
-                    ctx.lineTo(w-rso[n][4],rso[n][5]);
-                    ctx.lineTo(w-rso[n][6],rso[n][7]);
-                    ctx.lineTo(w-rso[n][0],rso[n][1]);
-                    ctx.lineWidth = 2;
-                    ctx.fillStyle = rso[n][8];//"rgb("+Math.floor(Math.random()*255)+","+Math.floor(Math.random()*255)+","+Math.floor(Math.random()*255)+")";
-                    ctx.fill();
-                    ctx.closePath();
-                    
-                    
-                }
-                
-            }
-            
-            var cx = (w-carW)/2;
-            var cl = false, cr = false;
-            var car = _i("c1");
-            var ms = 3*w/560;
-            function drawCar(){
-                if(cl) if(cx+carW+50 < w) cx+=ms;
-                if(cr) if(cx-50 > 0) cx-=ms;
-                ctx.drawImage(car,cx,h-carH,carW,carH);
-            }
-            
-            
-            var m = 0;
-            var intv = setInterval(function(){
-                try{
-                ctx.clearRect(0,0,w,h);
-                maxH+=0.5;
-                changedHeight = maxH*cnst1*(Math.pow(1/ratio,totalRso-1)-1);//maxH*(1-Math.pow(ratio,totalRso-5))/(1-ratio);
-                if(changedHeight >= totalHeight){
-                    maxH = maxHF;
-                    m++;
-                }
-                for(var n = 0; n < totalRso; n++){
-                    rso[n]=rectPoints(n,h-totalHeight+changedHeight);
-                    if(m%2==0) rso[n][8] = (n%2==0) ? "#000" : "#fff";
-                    else rso[n][8] = (n%2==1) ? "#000" : "#fff";
-                }
-                draw();
-                for(var n = 0; n < trees.length; n++){
-                    trees[n].draw();
-                }
-                
-                for(var n = 0; n < coins.length; n++){
-                    coins[n].draw();
-                }
-                
-                for(var n = 0; n < cars.length; n++){
-                    cars[n].draw();
-                }
-                
-                
-                drawCar();
-                }catch(err){
-                    
-                }
-                
-            },10)
-            //draw();
-            
-            //Game Control
-            
-            //Touch
-            function getTouch(e){
-                e.preventDefault();
-                var to = e.changedTouches[0];
-                var ty = parseInt(to.clientY);
-                if(ty>(h/2)){
-                    cl = true;
-                }
-                else{
-                    cr = true;
-                }
-            }
-            function getTouchEnd(){
-                cl = false;
-                cr = false;
-            }
-            
-            c.removeEventListener("touchstart",getTouch);
-            c.removeEventListener("touchend",getTouchEnd);
-            c.addEventListener("touchstart",getTouch);
-            c.addEventListener("touchend",getTouchEnd);
-            //Key..
-            function getKey(e){
-                e.preventDefault();
-                var ty = e.keyCode;
-                if(ty===39){
-                    cr = false;
-                    cl = true;
-                }
-                else if(ty===37){
-                    cl = false;
-                    cr = true;
-                }
-            }
-            function getKeyEnd(e){
-                var ty = e.keyCode;
-                if(ty === 39) cl = false;
-                else if(ty === 37) cr = false;
-            }
-            
-            document.body.removeEventListener("keydown",getKey);
-            document.body.removeEventListener("keyup",getKeyEnd);
-            document.body.addEventListener("keydown",getKey);
-            document.body.addEventListener("keyup",getKeyEnd);
-            //Accelarometre
-            
-            function driveCar(e){
-                var y = e.accelerationIncludingGravity.y;
-            
-                if(y > 0){
-                    if(cx+carW+50 < w) cx += y*ms;
-                }
-                else{
-                    if(cx-50 > 0) cx += y*ms;
-                }
-            }
-            
-            if(window.DeviceMotionEvent){
-                window.removeEventListener("devicemotion",driveCar)
-                   window.addEventListener("devicemotion",driveCar,false)
-            }
-            //End
+        btn = document.getElementsByClassName("tab-btn");
+        for (i = 0; i < btn.length; i++) {
+            btn[i].classList.remove("active");
         }
-        ld = function(){
-            if(loaded){
-                document.getElementById("startPage").style.display = "none";
-                document.getElementById("mainContainer").style.display = "block";
-                loadGame();
-            }
+        document.getElementById(tabName).style.display = "block";
+        document.getElementById(tabName).classList.add("active");
+        evt.currentTarget.classList.add("active");
+    }
+
+    // --- FIREBASE REALTIME CHAT SETUP ---
+    // Note: Free demo database parameters
+    const firebaseConfig = {
+        databaseURL: "https://romantic-chat-demo-default-rtdb.firebaseio.com"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+    const chatRef = database.ref("messages");
+
+    function sendMessage() {
+        const username = document.getElementById("usernameInput").value.trim() || "Anonymous";
+        const message = document.getElementById("messageInput").value.trim();
+
+        if (message !== "") {
+            chatRef.push({
+                sender: username,
+                text: message,
+                timestamp: Date.now()
+            });
+            document.getElementById("messageInput").value = "";
         }
-        })();
-        
-        </script>
-    </body>
+    }
+
+    // Listen to live messages online
+    chatRef.limitToLast(30).on("child_added", (snapshot) => {
+        const data = snapshot.val();
+        const myName = document.getElementById("usernameInput").value.trim();
+        const container = document.getElementById("messages-container");
+
+        const msgDiv = document.createElement("div");
+        const isMe = data.sender === myName;
+        msgDiv.className = `msg-bubble ${isMe ? 'msg-me' : 'msg-other'}`;
+
+        msgDiv.innerHTML = `
+            <div class="msg-sender">${data.sender}</div>
+            <div>${data.text}</div>
+        `;
+
+        container.appendChild(msgDiv);
+        container.scrollTop = container.scrollHeight;
+    });
+
+    // --- THREE.JS 3D BACKGROUND ---
+    const canvas = document.getElementById('webgl-bg');
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    camera.position.z = 30;
+
+    // 3D Particles
+    const geometry = new THREE.BufferGeometry();
+    const count = 300;
+    const positions = new Float32Array(count * 3);
+
+    for(let i=0; i<count*3; i++) {
+        positions[i] = (Math.random() - 0.5) * 80;
+    }
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+    const material = new THREE.PointsMaterial({ color: 0xff2a75, size: 0.8 });
+    const points = new THREE.Points(geometry, material);
+    scene.add(points);
+
+    function animate() {
+        requestAnimationFrame(animate);
+        points.rotation.y += 0.002;
+        points.rotation.x += 0.001;
+        renderer.render(scene, camera);
+    }
+    animate();
+
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+</script>
+
+</body>
 </html>
