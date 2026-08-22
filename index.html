@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Instagram Direct Live Chat</title>
-    <!-- PubNub SDK for 100% Working Instant Live Chat without setup -->
-    <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.7.2.2.min.js"></script>
+    <title>Instagram Direct</title>
+    <!-- PeerJS for Direct Real-Time Connection -->
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 
     <style>
         * {
@@ -16,13 +16,12 @@
         }
 
         body {
-            background-color: #000000;
-            color: #ffffff;
+            background-color: #000;
+            color: #fff;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            overflow: hidden;
         }
 
         .insta-chat-wrapper {
@@ -30,16 +29,14 @@
             max-width: 420px;
             height: 100vh;
             max-height: 850px;
-            background-color: #000000;
+            background-color: #000;
             border: 1px solid #262626;
             display: flex;
             flex-direction: column;
-            position: relative;
             border-radius: 20px;
             overflow: hidden;
         }
 
-        /* Top Header */
         .insta-header {
             height: 60px;
             border-bottom: 1px solid #262626;
@@ -47,7 +44,6 @@
             align-items: center;
             justify-content: space-between;
             padding: 0 16px;
-            background-color: #000000;
         }
 
         .user-profile-info {
@@ -79,7 +75,6 @@
         .username-text {
             font-size: 14px;
             font-weight: 600;
-            color: #f5f5f5;
         }
 
         .user-status {
@@ -87,22 +82,22 @@
             color: #a8a8a8;
         }
 
-        /* Username Lock Setup */
-        .username-setup-bar {
+        /* Connection & Username Setup Panel */
+        .setup-panel {
             background-color: #121212;
-            padding: 10px 16px;
+            padding: 12px 16px;
             border-bottom: 1px solid #262626;
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 8px;
         }
 
-        .username-input-group {
+        .input-row {
             display: flex;
             gap: 8px;
         }
 
-        .username-input-group input {
+        .input-row input {
             flex: 1;
             background: #262626;
             border: none;
@@ -113,7 +108,7 @@
             outline: none;
         }
 
-        .username-input-group button {
+        .input-row button {
             background: #0095f6;
             border: none;
             color: #fff;
@@ -124,9 +119,9 @@
             cursor: pointer;
         }
 
-        .lock-info-text {
-            font-size: 10px;
-            color: #a8a8a8;
+        .status-text {
+            font-size: 11px;
+            color: #ff7eb3;
         }
 
         /* Chat Scroll Area */
@@ -137,7 +132,7 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
-            background-color: #000000;
+            background-color: #000;
         }
 
         .msg-row {
@@ -166,13 +161,13 @@
 
         .sent .msg-bubble {
             background: linear-gradient(135deg, #a832d7, #e83377);
-            color: #ffffff;
+            color: #fff;
             border-bottom-right-radius: 4px;
         }
 
         .received .msg-bubble {
             background-color: #262626;
-            color: #ffffff;
+            color: #fff;
             border-bottom-left-radius: 4px;
         }
 
@@ -199,7 +194,7 @@
         /* Footer Input Bar */
         .insta-footer {
             padding: 12px 16px;
-            background-color: #000000;
+            background-color: #000;
             border-top: 1px solid #121212;
             display: flex;
             gap: 10px;
@@ -219,7 +214,7 @@
             background: transparent;
             border: none;
             outline: none;
-            color: #ffffff;
+            color: #fff;
             font-size: 14px;
         }
 
@@ -241,21 +236,28 @@
             <div class="profile-pic"><div>RS</div></div>
             <div>
                 <div class="username-text">rilasherif</div>
-                <div class="user-status">🟢 Active Live</div>
+                <div class="user-status" id="liveStatus">🔴 Disconnected</div>
             </div>
         </div>
     </div>
 
-    <div class="username-setup-bar">
-        <div id="usernameControlArea" class="username-input-group">
-            <input type="text" id="usernameInput" placeholder="Set your username...">
-            <button onclick="saveUsername()">Set</button>
+    <!-- Setup Area -->
+    <div class="setup-panel">
+        <div class="input-row" id="usernameArea">
+            <input type="text" id="usernameInput" placeholder="Enter Your Username...">
+            <button onclick="saveUsername()">Save</button>
         </div>
-        <span id="lockTimerInfo" class="lock-info-text">Username locks for 14 days upon saving.</span>
+        <div class="input-row">
+            <input type="text" id="peerIdInput" placeholder="Paste Partner's ID to connect...">
+            <button onclick="connectToPartner()">Connect</button>
+        </div>
+        <div class="status-text" id="myIdDisplay">My Connection ID: Creating...</div>
     </div>
 
+    <!-- Chat Messages Container -->
     <div class="chat-messages-area" id="chatMessages"></div>
 
+    <!-- Input Bar -->
     <div class="insta-footer">
         <div class="input-box-wrapper">
             <input type="text" id="messageInput" placeholder="Message..." onkeydown="if(event.key==='Enter') sendMessage()">
@@ -265,109 +267,115 @@
 </div>
 
 <script>
-    // Public Global Real-time Live Connection Keys
-    const pubnub = new PubNub({
-        publishKey: "pub-c-48be9f45-bb74-4b53-90d5-2e6f4770ca2b",
-        subscribeKey: "sub-c-11e2f3d2-28e4-11e9-a461-1e9d1bf76292",
-        userId: "user_" + Math.random().toString(36).substring(2, 9)
+    let peer = new Peer();
+    let conn = null;
+    let currentUsername = localStorage.getItem("insta_username") || "";
+
+    // 1. Peer Setup & ID Generation
+    peer.on('open', (id) => {
+        document.getElementById("myIdDisplay").innerText = `Your ID: ${id} (Share this with partner)`;
     });
 
-    const channel = "rilasherif_live_chat_room";
+    // Handle Incoming Connection
+    peer.on('connection', (connection) => {
+        conn = connection;
+        setupConnection();
+    });
 
-    pubnub.subscribe({ channels: [channel] });
-
-    let currentUsername = localStorage.getItem("insta_chat_username") || "";
-    let lockTimestamp = localStorage.getItem("insta_chat_username_lock") || 0;
-
-    // 14 Days Username Lock System
-    function checkUsernameLock() {
-        const now = Date.now();
-        const fourteenDaysInMs = 14 * 24 * 60 * 60 * 1000;
-        const timePassed = now - lockTimestamp;
-
-        if (currentUsername && timePassed < fourteenDaysInMs) {
-            const remainingDays = Math.ceil((fourteenDaysInMs - timePassed) / (1000 * 60 * 60 * 24));
-            document.getElementById("usernameControlArea").innerHTML = `<span style="font-size:13px; font-weight:600; color:#fff;">User: <span style="color:#e83377;">@${currentUsername}</span></span>`;
-            document.getElementById("lockTimerInfo").innerText = `🔒 Username locked for ${remainingDays} days.`;
+    // 2. Connect to Partner ID
+    function connectToPartner() {
+        const partnerId = document.getElementById("peerIdInput").value.trim();
+        if (partnerId) {
+            conn = peer.connect(partnerId);
+            setupConnection();
         }
     }
 
+    function setupConnection() {
+        conn.on('open', () => {
+            document.getElementById("liveStatus").innerText = "🟢 Active Now";
+            document.getElementById("liveStatus").style.color = "#00ea90";
+        });
+
+        conn.on('data', (data) => {
+            if (data.type === 'CHAT') {
+                renderMessage(data.id, data.sender, data.text, false);
+            } else if (data.type === 'DELETE') {
+                const el = document.getElementById(data.id);
+                if (el) el.remove();
+            }
+        });
+    }
+
+    // Username Save Logic
     function saveUsername() {
-        const inputVal = document.getElementById("usernameInput").value.trim();
-        if (inputVal !== "") {
-            currentUsername = inputVal;
-            lockTimestamp = Date.now();
-            localStorage.setItem("insta_chat_username", currentUsername);
-            localStorage.setItem("insta_chat_username_lock", lockTimestamp);
-            checkUsernameLock();
+        const val = document.getElementById("usernameInput").value.trim();
+        if (val) {
+            currentUsername = val;
+            localStorage.setItem("insta_username", val);
+            document.getElementById("usernameArea").innerHTML = `<span style="font-weight:600; font-size:13px;">User: <span style="color:#e83377;">@${currentUsername}</span></span>`;
         }
     }
 
-    checkUsernameLock();
+    if (currentUsername) {
+        document.getElementById("usernameArea").innerHTML = `<span style="font-weight:600; font-size:13px;">User: <span style="color:#e83377;">@${currentUsername}</span></span>`;
+    }
 
-    // Send Live Message
+    // Send Message
     function sendMessage() {
         if (!currentUsername) {
-            alert("Please set your username first!");
+            alert("Set your username first!");
             return;
         }
-        const textInput = document.getElementById("messageInput");
-        const msgText = textInput.value.trim();
+        if (!conn) {
+            alert("Please connect to your partner using Connection ID first!");
+            return;
+        }
+
+        const input = document.getElementById("messageInput");
+        const msgText = input.value.trim();
 
         if (msgText !== "") {
-            const msgObj = {
-                id: 'msg_' + Date.now(),
-                sender: currentUsername,
-                text: msgText,
-                action: 'CHAT'
-            };
+            const msgId = 'msg_' + Date.now();
+            const msgData = { type: 'CHAT', id: msgId, sender: currentUsername, text: msgText };
 
-            pubnub.publish({ channel: channel, message: msgObj });
-            textInput.value = "";
+            conn.send(msgData);
+            renderMessage(msgId, currentUsername, msgText, true);
+            input.value = "";
         }
     }
 
     // Unsend Message
     function unsendMessage(msgId) {
         if (confirm("Unsend message?")) {
-            pubnub.publish({
-                channel: channel,
-                message: { id: msgId, action: 'DELETE' }
-            });
+            if (conn) {
+                conn.send({ type: 'DELETE', id: msgId });
+            }
+            const el = document.getElementById(msgId);
+            if (el) el.remove();
         }
     }
 
-    // Receive Realtime Live Messages Sync
-    pubnub.addListener({
-        message: function(event) {
-            const data = event.message;
-            const container = document.getElementById("chatMessages");
+    // Render Message UI
+    function renderMessage(id, sender, text, isMe) {
+        const container = document.getElementById("chatMessages");
+        const msgRow = document.createElement("div");
+        msgRow.className = `msg-row ${isMe ? 'sent' : 'received'}`;
+        msgRow.id = id;
 
-            if (data.action === 'DELETE') {
-                const el = document.getElementById(data.id);
-                if (el) el.remove();
-                return;
-            }
+        const unsendBtnHtml = isMe ? `<button class="unsend-btn" onclick="unsendMessage('${id}')">Unsend</button>` : '';
 
-            const isMe = data.sender === currentUsername;
-            const msgRow = document.createElement("div");
-            msgRow.className = `msg-row ${isMe ? 'sent' : 'received'}`;
-            msgRow.id = data.id;
+        msgRow.innerHTML = `
+            <div class="msg-bubble">
+                <div class="sender-tag">@${sender}</div>
+                <div>${text}</div>
+            </div>
+            ${unsendBtnHtml}
+        `;
 
-            const unsendBtnHtml = isMe ? `<button class="unsend-btn" title="Unsend" onclick="unsendMessage('${data.id}')">Unsend</button>` : '';
-
-            msgRow.innerHTML = `
-                <div class="msg-bubble">
-                    <div class="sender-tag">@${data.sender}</div>
-                    <div>${data.text}</div>
-                </div>
-                ${unsendBtnHtml}
-            `;
-
-            container.appendChild(msgRow);
-            container.scrollTop = container.scrollHeight;
-        }
-    });
+        container.appendChild(msgRow);
+        container.scrollTop = container.scrollHeight;
+    }
 </script>
 
 </body>
