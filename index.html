@@ -3,146 +3,267 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WhatsApp Web - Global Phone Chat</title>
+    <title>rilasherif - 3D Magic Book Reader</title>
+    <!-- StPageFlip Library for Real 3D Book Page Turning -->
+    <script src="https://cdn.jsdelivr.net/npm/page-flip/dist/js/page-flip.browser.js"></script>
+
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        body { background-color: #111b21; color: #e9edef; display: flex; justify-content: center; align-items: center; height: 100vh; }
-        
-        .app-container { width: 100%; max-width: 450px; height: 100vh; max-height: 850px; background-color: #111b21; border: 1px solid #222d34; display: flex; flex-direction: column; position: relative; border-radius: 12px; overflow: hidden; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Georgia', serif;
+        }
 
-        /* AUTH SCREEN */
-        .auth-screen { position: absolute; inset: 0; background-color: #111b21; z-index: 10; display: flex; flex-direction: column; justify-content: center; padding: 30px; text-align: center; }
-        .auth-screen h2 { color: #00a884; margin-bottom: 8px; font-size: 22px; }
-        .auth-screen p { color: #8696a0; font-size: 13px; margin-bottom: 24px; }
-        
-        .phone-input-group { display: flex; gap: 8px; margin-bottom: 16px; }
-        .country-select { background: #202c33; color: #e9edef; border: 1px solid #2a3942; border-radius: 8px; padding: 12px; font-size: 14px; outline: none; }
-        .phone-input { flex: 1; background: #202c33; color: #e9edef; border: 1px solid #2a3942; border-radius: 8px; padding: 12px; font-size: 14px; outline: none; }
-        
-        .btn-green { background: #00a884; color: #111b21; border: none; padding: 14px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 15px; width: 100%; }
-        .btn-green:hover { background: #029071; }
+        body {
+            background-color: #0d0f12;
+            color: #d1c7bd;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
 
-        .otp-box { display: none; margin-top: 15px; }
-        .otp-input { width: 100%; background: #202c33; border: 1px solid #00a884; color: #fff; padding: 12px; border-radius: 8px; text-align: center; font-size: 18px; letter-spacing: 5px; margin-bottom: 12px; outline: none; }
+        /* Header UI */
+        header {
+            width: 100%;
+            background: linear-gradient(180deg, #181d24 0%, #0d0f12 100%);
+            padding: 20px 0;
+            text-align: center;
+            border-bottom: 2px solid #8c6d3b;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.8);
+        }
 
-        /* CHAT SCREEN */
-        .chat-screen { display: flex; flex-direction: column; height: 100%; }
-        .chat-header { background: #202c33; height: 60px; display: flex; align-items: center; padding: 0 16px; gap: 12px; border-bottom: 1px solid #222d34; }
-        .avatar { width: 40px; height: 40px; border-radius: 50%; background: #6b7c85; display: flex; align-items: center; justify-content: center; font-weight: bold; }
-        .header-info { flex: 1; }
-        .header-name { font-size: 15px; font-weight: 600; }
-        .header-status { font-size: 11px; color: #00a884; }
+        header h1 {
+            font-size: 28px;
+            letter-spacing: 3px;
+            color: #e5b968;
+            text-shadow: 0 0 10px rgba(229, 185, 104, 0.4);
+            font-family: 'Trebuchet MS', sans-serif;
+        }
 
-        .chat-body { flex: 1; background: #0b141a; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
-        .msg { max-width: 75%; padding: 8px 12px; border-radius: 8px; font-size: 14px; line-height: 1.4; word-break: break-word; position: relative; }
-        .msg.sent { background: #005c4b; align-self: flex-end; border-top-right-radius: 0; }
-        .msg.received { background: #202c33; align-self: flex-start; border-top-left-radius: 0; }
-        .msg-time { font-size: 10px; color: #8696a0; text-align: right; margin-top: 4px; }
+        header p {
+            font-size: 12px;
+            color: #a39585;
+            margin-top: 4px;
+        }
 
-        .chat-footer { background: #202c33; padding: 10px 16px; display: flex; align-items: center; gap: 10px; }
-        .chat-footer input { flex: 1; background: #2a3942; border: none; color: #e9edef; padding: 11px 16px; border-radius: 8px; font-size: 14px; outline: none; }
-        .send-icon { background: #00a884; border: none; width: 40px; height: 40px; border-radius: 50%; color: #111b21; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        /* Book Navigation Tabs */
+        .tabs-bar {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .tab-btn {
+            background: #1a212b;
+            color: #d1c7bd;
+            border: 1px solid #8c6d3b;
+            padding: 8px 18px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active, .tab-btn:hover {
+            background: #8c6d3b;
+            color: #0d0f12;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(140, 109, 59, 0.5);
+        }
+
+        /* 3D Book Container */
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+            width: 100%;
+        }
+
+        .flip-book {
+            box-shadow: 0 10px 30px rgba(0,0,0,0.9);
+            display: none;
+        }
+
+        .page {
+            padding: 30px 25px;
+            background-color: #fcf8ee;
+            color: #2b231d;
+            border: 1px solid #e2d7c5;
+            overflow: hidden;
+        }
+
+        .page-cover {
+            background: linear-gradient(135deg, #2c1a0e, #50311a);
+            color: #e5b968;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            border: 4px solid #8c6d3b;
+        }
+
+        .page-cover h2 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #8c6d3b;
+            padding-bottom: 5px;
+        }
+
+        .page-header {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #8c6d3b;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #d4c5b0;
+            padding-bottom: 5px;
+        }
+
+        .page-content {
+            font-size: 14px;
+            line-height: 1.7;
+            text-align: justify;
+        }
+
+        .page-footer {
+            position: absolute;
+            bottom: 15px;
+            right: 25px;
+            font-size: 11px;
+            color: #8c6d3b;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 600px) {
+            header h1 { font-size: 22px; }
+            .page { padding: 20px 15px; }
+            .page-content { font-size: 12px; }
+        }
     </style>
 </head>
 <body>
 
-<div class="app-container">
-    <!-- AUTH SCREEN -->
-    <div class="auth-screen" id="authScreen">
-        <h2>WhatsApp</h2>
-        <p>Enter your phone number to verify your account globally.</p>
+    <!-- Header Section -->
+    <header>
+        <h1>rilasherif</h1>
+        <p>✨ 3D Interactive Magic Library ✨</p>
+    </header>
 
-        <div class="phone-input-group">
-            <select class="country-select" id="countryCode">
-                <option value="+94">🇱🇰 +94</option>
-                <option value="+91">🇮🇳 +91</option>
-                <option value="+971">🇦🇪 +971</option>
-                <option value="+1">🇺🇸 +1</option>
-                <option value="+44">🇬🇧 +4UK</option>
-            </select>
-            <input type="tel" class="phone-input" id="phoneNum" placeholder="Mobile Number">
-        </div>
-
-        <button class="btn-green" id="sendOtpBtn" onclick="sendOTP()">Request OTP</button>
-
-        <div class="otp-box" id="otpBox">
-            <input type="text" class="otp-input" id="otpInput" maxlength="6" placeholder="0 0 0 0 0 0">
-            <button class="btn-green" onclick="verifyOTP()">Verify & Login</button>
-        </div>
+    <!-- Navigation Tabs -->
+    <div class="tabs-bar">
+        <button class="tab-btn active" onclick="switchBook('book1')">Book 1: The Magic Spell</button>
+        <button class="tab-btn" onclick="switchBook('book2')">Book 2: The Secret Vault</button>
     </div>
 
-    <!-- MAIN CHAT SCREEN -->
-    <div class="chat-screen">
-        <div class="chat-header">
-            <div class="avatar">WA</div>
-            <div class="header-info">
-                <div class="header-name" id="userDisplay">Global Chat Room</div>
-                <div class="header-status">online</div>
+    <!-- 3D Book Area -->
+    <div class="container">
+        
+        <!-- BOOK 1 -->
+        <div id="book1" class="flip-book">
+            <!-- Cover Page -->
+            <div class="page page-cover">
+                <h2>The Magic Spell</h2>
+                <p style="color:#d1c7bd; font-style:italic;">Chapter I: The Discovery</p>
+                <span style="margin-top:40px; font-size:12px;">Turn page to read ➔</span>
+            </div>
+            <!-- Page 1 -->
+            <div class="page">
+                <div class="page-header">rilasherif 3D Library</div>
+                <div class="page-content">
+                    <p><b>Chapter 1: The Mysterious Wand</b></p><br>
+                    <p>The night was unusually quiet in the ancient school of sorcery. Shadows danced along the stone walls as young Leo walked down the dimly lit corridor. In his hand, he held an old leather-bound journal that belonged to the grand wizard.</p><br>
+                    <p>"Every spell leaves a mark," he whispered, turning to the first glowing page.</p>
+                </div>
+                <div class="page-footer">1</div>
+            </div>
+            <!-- Page 2 -->
+            <div class="page">
+                <div class="page-header">rilasherif 3D Library</div>
+                <div class="page-content">
+                    <p>Suddenly, a bright blue light sparkled from the tip of his wooden wand. The symbols on the wall began to align, revealing a hidden door behind the bookshelf.</p><br>
+                    <p>He stepped forward, knowing that behind this door lay the secrets of the lost magic realm.</p>
+                </div>
+                <div class="page-footer">2</div>
             </div>
         </div>
 
-        <div class="chat-body" id="chatBody">
-            <div class="msg received">
-                Welcome to WhatsApp Web Global! Enter your mobile number to test the interface.
-                <div class="msg-time">12:00 PM</div>
+        <!-- BOOK 2 -->
+        <div id="book2" class="flip-book">
+            <!-- Cover Page -->
+            <div class="page page-cover">
+                <h2>The Secret Vault</h2>
+                <p style="color:#d1c7bd; font-style:italic;">Chapter II: The Key</p>
+                <span style="margin-top:40px; font-size:12px;">Turn page to read ➔</span>
+            </div>
+            <!-- Page 1 -->
+            <div class="page">
+                <div class="page-header">rilasherif 3D Library</div>
+                <div class="page-content">
+                    <p><b>Chapter 2: The Golden Chamber</b></p><br>
+                    <p>Deep beneath the castle ruins lay the Secret Vault. Guarded by ancient enchantments, no ordinary mortal had stepped inside for over a thousand years.</p><br>
+                    <p>Leo held his breath as the massive iron gates creaked open, revealing chests filled with glowing crystals.</p>
+                </div>
+                <div class="page-footer">1</div>
+            </div>
+            <!-- Page 2 -->
+            <div class="page">
+                <div class="page-header">rilasherif 3D Library</div>
+                <div class="page-content">
+                    <p>Among the treasures stood a floating orb of light. As he approached, a soft voice echoed through the chamber, whispering ancient incantations...</p>
+                </div>
+                <div class="page-footer">2</div>
             </div>
         </div>
 
-        <div class="chat-footer">
-            <input type="text" id="msgInput" placeholder="Type a message" onkeydown="if(event.key==='Enter') sendMsg()">
-            <button class="send-icon" onclick="sendMsg()">➤</button>
-        </div>
     </div>
-</div>
 
 <script>
-    let generatedOTP = null;
-    let fullPhone = "";
+    let currentFlipInstance = null;
 
-    function sendOTP() {
-        const num = document.getElementById("phoneNum").value.trim();
-        const code = document.getElementById("countryCode").value;
-        if(num.length < 7) {
-            alert("Please enter a valid mobile number!");
-            return;
+    function initBook(bookId) {
+        if (currentFlipInstance) {
+            currentFlipInstance.destroy();
         }
 
-        fullPhone = code + num;
-        generatedOTP = Math.floor(100000 + Math.random() * 900000); // 6 Digit OTP
+        document.querySelectorAll('.flip-book').forEach(b => b.style.display = 'none');
         
-        alert(`[Demo SMS Gateway]\nYour Verification Code for ${fullPhone} is: ${generatedOTP}`);
-        
-        document.getElementById("otpBox").style.display = "block";
-        document.getElementById("sendOtpBtn").style.display = "none";
+        const targetBook = document.getElementById(bookId);
+        targetBook.style.display = 'block';
+
+        const pageFlip = new St.PageFlip(targetBook, {
+            width: 320,
+            height: 460,
+            size: "fixed",
+            minWidth: 280,
+            maxWidth: 500,
+            minHeight: 400,
+            maxHeight: 600,
+            maxShadowOpacity: 0.5,
+            showCover: true,
+            mobileScrollSupport: false
+        });
+
+        pageFlip.loadFromHTML(targetBook.querySelectorAll('.page'));
+        currentFlipInstance = pageFlip;
     }
 
-    function verifyOTP() {
-        const userOtp = document.getElementById("otpInput").value.trim();
-        if(userOtp == generatedOTP) {
-            document.getElementById("authScreen").style.display = "none";
-            document.getElementById("userDisplay").innerText = fullPhone;
-        } else {
-            alert("Invalid OTP Code! Try again.");
-        }
+    function switchBook(bookId) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+        initBook(bookId);
     }
 
-    function sendMsg() {
-        const input = document.getElementById("msgInput");
-        const text = input.value.trim();
-        if(!text) return;
-
-        const body = document.getElementById("chatBody");
-        const now = new Date();
-        const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-        const msgDiv = document.createElement("div");
-        msgDiv.className = "msg sent";
-        msgDiv.innerHTML = `${text} <div class="msg-time">${timeStr} ✓✓</div>`;
-
-        body.appendChild(msgDiv);
-        input.value = "";
-        body.scrollTop = body.scrollHeight;
-    }
+    // Initialize First Book on Load
+    window.onload = () => {
+        initBook('book1');
+    };
 </script>
 
 </body>
