@@ -1,13 +1,11 @@
 <!DOCTYPE html>
-<html lang="ta">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>rilasherif - 3D Magical Romantic Journey</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
-    <!-- Three.js Library for 3D Graphics -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <!-- Firebase SDKs for Real-time Chat -->
+    <title>Instagram Direct</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Firebase SDKs for Real-time Live Sync -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -16,483 +14,331 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
+
         body {
-            font-family: 'Poppins', sans-serif;
-            background: #090514;
+            background-color: #000000;
             color: #ffffff;
-            min-height: 100vh;
-            padding: 20px;
-            overflow-x: hidden;
-            position: relative;
-        }
-
-        #webgl-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: rgba(20, 15, 38, 0.75);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border-radius: 28px;
-            box-shadow: 0 20px 50px rgba(255, 42, 117, 0.25), 0 0 20px rgba(255, 255, 255, 0.1);
-            overflow: hidden;
-            border: 1.5px solid rgba(255, 182, 193, 0.3);
-            color: #fff;
-            position: relative;
-            z-index: 10;
-        }
-
-        header {
-            background: linear-gradient(135deg, rgba(255, 42, 117, 0.8), rgba(145, 20, 112, 0.8), rgba(255, 82, 82, 0.8));
-            background-size: 200% 200%;
-            animation: gradientShift 6s ease infinite;
-            color: white;
-            text-align: center;
-            padding: 40px 20px;
-            position: relative;
-        }
-
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        header h1 {
-            font-family: 'Great Vibes', cursive;
-            font-size: 65px;
-            margin-bottom: 5px;
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.9), 0 0 10px rgba(255, 42, 117, 0.8);
-        }
-
-        header p.subtitle {
-            font-size: 14px;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            opacity: 0.9;
-            font-weight: 300;
-        }
-
-        .heart-badge {
-            display: inline-block;
-            background: rgba(255, 255, 255, 0.95);
-            color: #d81b60;
-            padding: 8px 25px;
-            border-radius: 30px;
-            font-weight: 700;
-            margin-top: 15px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        .insta-container {
             display: flex;
-            flex-wrap: wrap;
             justify-content: center;
-            gap: 15px;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            position: relative;
-            z-index: 999;
-        }
-
-        .insta-btn {
-            display: inline-flex;
             align-items: center;
-            justify-content: center;
-            padding: 12px 26px;
-            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
-            color: #ffffff !important;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 15px;
-            border-radius: 30px;
-            box-shadow: 0 6px 20px rgba(220, 39, 67, 0.4);
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
-            z-index: 1000;
-            cursor: pointer;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .insta-btn:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 10px 25px rgba(220, 39, 67, 0.6);
-        }
-
-        .nav-tabs {
-            display: flex;
-            background: rgba(0, 0, 0, 0.2);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            overflow-x: auto;
-        }
-
-        .tab-btn {
-            flex: 1;
-            padding: 18px;
-            text-align: center;
-            font-weight: 600;
-            color: #e0b0ff;
-            cursor: pointer;
-            border: none;
-            background: transparent;
-            font-size: 15px;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-        }
-
-        .tab-btn.active {
-            background: rgba(255, 42, 117, 0.2);
-            color: #ff7eb3;
-            border-bottom: 3px solid #ff2a75;
-        }
-
-        .content-section {
-            padding: 30px;
-            display: none;
-        }
-
-        .content-section.active {
-            display: block;
-            animation: fadeIn 0.5s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .story-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-left: 4px solid #ff2a75;
-            padding: 22px;
-            margin-bottom: 22px;
-            border-radius: 0 16px 16px 0;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            backdrop-filter: blur(5px);
-        }
-
-        .story-card h2 {
-            color: #ff7eb3;
-            margin-bottom: 10px;
-            font-size: 20px;
-        }
-
-        .story-card p {
-            line-height: 1.8;
-            font-size: 15px;
-            color: #e2d9f3;
-        }
-
-        .quote-box {
-            text-align: center;
-            padding: 25px;
-            background: linear-gradient(135deg, rgba(255, 117, 140, 0.3), rgba(255, 126, 179, 0.3));
-            border: 1px solid rgba(255, 182, 193, 0.3);
-            color: white;
-            border-radius: 18px;
-            margin: 22px 0;
-            font-style: italic;
-            font-size: 17px;
-            box-shadow: 0 8px 25px rgba(255, 117, 140, 0.2);
-        }
-
-        /* INSTAGRAM STYLE CHAT STYLES */
-        .chat-container {
-            background: rgba(15, 10, 25, 0.85);
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            height: 100vh;
             overflow: hidden;
+        }
+
+        /* Instagram App Frame */
+        .insta-chat-wrapper {
+            width: 100%;
+            max-width: 450px;
+            height: 100vh;
+            max-height: 900px;
+            background-color: #000000;
+            border: 1px solid #262626;
             display: flex;
             flex-direction: column;
-            height: 480px;
+            position: relative;
         }
 
-        .username-bar {
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.05);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        /* Instagram Top Header Bar */
+        .insta-header {
+            height: 60px;
+            border-bottom: 1px solid #262626;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 10px;
+            padding: 0 16px;
+            background-color: #000000;
+            z-index: 10;
         }
 
-        .username-bar input {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 8px 15px;
-            border-radius: 20px;
-            color: #fff;
-            outline: none;
-            font-size: 14px;
-        }
-
-        .username-bar button {
-            background: #ff2a75;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .user-lock-info {
-            font-size: 12px;
-            color: #ff7eb3;
-            font-style: italic;
-        }
-
-        .chat-messages {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
+        .header-left {
             display: flex;
-            flex-direction: column;
+            align-items: center;
             gap: 12px;
         }
 
-        .message-row {
+        .back-icon, .icon-btn {
+            background: none;
+            border: none;
+            color: #ffffff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-profile-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .profile-pic {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+            padding: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .profile-pic img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid #000;
+            object-fit: cover;
+        }
+
+        .user-name-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .username-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: #f5f5f5;
+        }
+
+        .user-status {
+            font-size: 11px;
+            color: #a8a8a8;
+        }
+
+        /* Username Setup Overlay Bar */
+        .username-setup-bar {
+            background-color: #121212;
+            padding: 10px 16px;
+            border-bottom: 1px solid #262626;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .username-input-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .username-input-group input {
+            flex: 1;
+            background: #262626;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .username-input-group button {
+            background: #0095f6;
+            border: none;
+            color: #fff;
+            font-weight: 600;
+            font-size: 12px;
+            padding: 0 14px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .lock-info-text {
+            font-size: 10px;
+            color: #8e8e8e;
+        }
+
+        /* Chat Messages Scroll Container */
+        .chat-messages-area {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background-color: #000000;
+        }
+
+        /* Instagram Message Bubbles */
+        .msg-row {
             display: flex;
             align-items: flex-end;
             gap: 8px;
-            max-width: 80%;
+            max-width: 75%;
+            position: relative;
         }
 
-        .message-row.sent {
+        .msg-row.sent {
             align-self: flex-end;
             flex-direction: row-reverse;
         }
 
-        .message-row.received {
+        .msg-row.received {
             align-self: flex-start;
         }
 
-        .msg-bubble-insta {
-            padding: 12px 18px;
+        .msg-bubble {
+            padding: 10px 16px;
             border-radius: 22px;
             font-size: 14px;
             line-height: 1.4;
-            word-break: break-word;
+            word-wrap: break-word;
             position: relative;
         }
 
-        .sent .msg-bubble-insta {
-            background: linear-gradient(135deg, #3753e9, #8d37e9, #d82b7d);
-            color: #fff;
+        /* Sent Message: Insta Purple-Pink Gradient */
+        .sent .msg-bubble {
+            background: linear-gradient(135deg, #a832d7, #e83377);
+            color: #ffffff;
             border-bottom-right-radius: 4px;
         }
 
-        .received .msg-bubble-insta {
-            background: rgba(255, 255, 255, 0.12);
-            color: #fff;
+        /* Received Message: Dark Glass Grey */
+        .received .msg-bubble {
+            background-color: #262626;
+            color: #ffffff;
             border-bottom-left-radius: 4px;
         }
 
-        .msg-sender-name {
+        .sender-tag {
             font-size: 10px;
-            opacity: 0.7;
-            margin-bottom: 3px;
+            color: #a8a8a8;
+            margin-bottom: 2px;
+            font-weight: 500;
         }
 
-        .delete-btn {
+        /* Unsend/Delete Button */
+        .unsend-btn {
             background: none;
             border: none;
-            color: #ff4081;
+            color: #ed4956;
+            font-size: 11px;
             cursor: pointer;
-            font-size: 13px;
             opacity: 0;
             transition: opacity 0.2s ease;
+            padding: 0 4px;
         }
 
-        .message-row:hover .delete-btn {
+        .msg-row:hover .unsend-btn {
             opacity: 1;
         }
 
-        .chat-input-area {
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.3);
+        /* Instagram Input Footer */
+        .insta-footer {
+            padding: 12px 16px;
+            background-color: #000000;
+            border-top: 1px solid #121212;
             display: flex;
-            gap: 10px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            align-items: center;
+            gap: 12px;
         }
 
-        .chat-input-area input {
+        .input-box-wrapper {
             flex: 1;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 12px 20px;
+            background-color: #262626;
             border-radius: 25px;
-            color: #fff;
-            outline: none;
+            display: flex;
+            align-items: center;
+            padding: 8px 16px;
+            gap: 10px;
         }
 
-        .chat-input-area button {
-            background: #ff2a75;
-            color: white;
+        .input-box-wrapper input {
+            flex: 1;
+            background: transparent;
             border: none;
-            padding: 12px 22px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        footer {
-            text-align: center;
-            padding: 20px;
-            background: rgba(10, 5, 20, 0.9);
-            color: white;
+            outline: none;
+            color: #ffffff;
             font-size: 14px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        footer span {
-            color: #ff4081;
+        .input-box-wrapper input::placeholder {
+            color: #8e8e8e;
+        }
+
+        .send-btn {
+            background: none;
+            border: none;
+            color: #0095f6;
             font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: default;
         }
     </style>
 </head>
 <body>
 
-<canvas id="webgl-bg"></canvas>
-
-<div class="container">
-    <header>
-        <h1>rilasherif</h1>
-        <p class="subtitle">A Magical Journey of Love</p>
-        <div class="heart-badge">Rila 💗 Sherif</div>
-    </header>
-
-    <div class="insta-container">
-        <a href="https://instagram.com/sh.xrif" target="_blank" rel="noopener noreferrer" class="insta-btn">
-            📸 @sh.xrif
-        </a>
-        <a href="https://instagram.com/yk.m0i" target="_blank" rel="noopener noreferrer" class="insta-btn">
-            📸 @yk.m0i
-        </a>
-    </div>
-
-    <!-- Navigation Tabs -->
-    <div class="nav-tabs">
-        <button class="tab-btn active" onclick="openTab(event, 'chat')">💬 Instagram Chat</button>
-        <button class="tab-btn" onclick="openTab(event, 'story')">📖 How It Began</button>
-        <button class="tab-btn" onclick="openTab(event, 'feelings')">✨ Heartfelt Feelings</button>
-        <button class="tab-btn" onclick="openTab(event, 'future')">🌟 Future Dreams</button>
-    </div>
-
-    <!-- Tab 0: INSTAGRAM CHAT TAB -->
-    <div id="chat" class="content-section active">
-        <div class="chat-container">
-            <div class="username-bar">
-                <div id="userDisplayArea" style="display: flex; align-items: center; gap: 10px;">
-                    <input type="text" id="usernameInput" placeholder="Enter username...">
-                    <button onclick="saveUsername()">Save</button>
+<div class="insta-chat-wrapper">
+    <!-- Header -->
+    <div class="insta-header">
+        <div class="header-left">
+            <button class="back-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+            </button>
+            <div class="user-profile-info">
+                <div class="profile-pic">
+                    <img src="https://v0.blob.com/avatar.png" alt="Profile" onerror="this.src='https://via.placeholder.com/150/d82b7d/ffffff?text=IG'">
                 </div>
-                <div id="lockTimerInfo" class="user-lock-info"></div>
-            </div>
-
-            <div class="chat-messages" id="chatMessages"></div>
-
-            <div class="chat-input-area">
-                <input type="text" id="messageInput" placeholder="Message..." onkeydown="if(event.key==='Enter') sendMessage()">
-                <button onclick="sendMessage()">Send</button>
+                <div class="user-name-details">
+                    <span class="username-text">rilasherif</span>
+                    <span class="user-status">Active now</span>
+                </div>
             </div>
         </div>
+        <button class="icon-btn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="1"></circle>
+                <circle cx="19" cy="12" r="1"></circle>
+                <circle cx="5" cy="12" r="1"></circle>
+            </svg>
+        </button>
     </div>
 
-    <!-- Tab 1: How It Began -->
-    <div id="story" class="content-section">
-        <div class="story-card">
-            <h2>01. Two Hearts, One Connection</h2>
-            <p>Life brings many people into our path, but only a special few stay in our hearts forever. When Rila and Sherif met, a sweet unspoken connection began. A simple smile turned into deep conversations, and slowly, friendship grew into a priceless bond of love.</p>
+    <!-- Username Setup Bar -->
+    <div class="username-setup-bar">
+        <div id="usernameControlArea" class="username-input-group">
+            <input type="text" id="usernameInput" placeholder="Set your username...">
+            <button onclick="saveUsername()">Set</button>
         </div>
-
-        <div class="quote-box">
-            "In a sky full of stars, my eyes will always search for you — Rila & Sherif."
-        </div>
-
-        <div class="story-card">
-            <h2>02. Understanding & Care</h2>
-            <p>Love isn't just about big moments; it's about checking up on each other, sharing daily smiles, and understanding feelings without saying a single word. Everyday chats and shared laughs make their bond stronger and sweeter.</p>
-        </div>
+        <span id="lockTimerInfo" class="lock-info-text">You can change your username after 14 days.</span>
     </div>
 
-    <!-- Tab 2: Feelings -->
-    <div id="feelings" class="content-section">
-        <div class="story-card">
-            <h2>Special Memories 💖</h2>
-            <p>
-                🌸 <b>Sweet Conversations:</b> Spending endless hours talking about everything and nothing.<br><br>
-                ☕ <b>Caring For Each Other:</b> Being the comfort zone whenever life gets stressful.<br><br>
-                ✨ <b>Unspoken Trust:</b> Believing in each other's dreams and always standing side by side.
-            </p>
-        </div>
-    </div>
+    <!-- Real-time Live Chat Area -->
+    <div class="chat-messages-area" id="chatMessages"></div>
 
-    <!-- Tab 3: Future Dreams -->
-    <div id="future" class="content-section">
-        <div class="story-card">
-            <h2>Looking Ahead Together 🌟</h2>
-            <p>
-                ✨ To always keep each other happy and smiling.<br><br>
-                ✨ To support each other's goals and ambitions.<br><br>
-                ✨ To patiently build a beautiful future together, step by step.
-            </p>
+    <!-- Input Footer -->
+    <div class="insta-footer">
+        <div class="input-box-wrapper">
+            <input type="text" id="messageInput" placeholder="Message..." onkeydown="if(event.key==='Enter') sendMessage()">
         </div>
+        <button class="send-btn" onclick="sendMessage()">Send</button>
     </div>
-
-    <footer>
-        <p>Created with Love for <span>Rila & Sherif</span> | Sweethearts</p>
-    </footer>
 </div>
 
 <script>
-    // Tab Switch Logic
-    function openTab(evt, tabName) {
-        var i, content, btn;
-        content = document.getElementsByClassName("content-section");
-        for (i = 0; i < content.length; i++) {
-            content[i].style.display = "none";
-            content[i].classList.remove("active");
-        }
-        btn = document.getElementsByClassName("tab-btn");
-        for (i = 0; i < btn.length; i++) {
-            btn[i].classList.remove("active");
-        }
-        document.getElementById(tabName).style.display = "block";
-        document.getElementById(tabName).classList.add("active");
-        evt.currentTarget.classList.add("active");
-    }
-
-    // --- FIREBASE ONLINE CHAT CONFIGURATION ---
+    // --- FIREBASE LIVE REALTIME CHAT ENGINE ---
     const firebaseConfig = {
         databaseURL: "https://romantic-chat-demo-default-rtdb.firebaseio.com"
     };
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
-    const chatRef = database.ref("insta_messages");
+    const chatRef = database.ref("insta_direct_messages");
 
-    let currentUsername = localStorage.getItem("chat_username") || "";
-    let lockTimestamp = localStorage.getItem("chat_username_lock_time") || 0;
+    let currentUsername = localStorage.getItem("insta_chat_username") || "";
+    let lockTimestamp = localStorage.getItem("insta_chat_username_lock") || 0;
 
+    // 14-Days Lock Verification
     function checkUsernameLock() {
         const now = Date.now();
         const fourteenDaysInMs = 14 * 24 * 60 * 60 * 1000;
@@ -500,13 +346,13 @@
 
         if (currentUsername && timePassed < fourteenDaysInMs) {
             const remainingDays = Math.ceil((fourteenDaysInMs - timePassed) / (1000 * 60 * 60 * 24));
-            document.getElementById("userDisplayArea").innerHTML = `<span style="font-weight:600; font-size:15px; color:#ff7eb3;">👤 @${currentUsername}</span>`;
-            document.getElementById("lockTimerInfo").innerText = `🔒 Username locked (${remainingDays} days left to change)`;
+            document.getElementById("usernameControlArea").innerHTML = `<span style="font-size:13px; font-weight:600; color:#fff;">Logged in as: <span style="color:#e83377;">@${currentUsername}</span></span>`;
+            document.getElementById("lockTimerInfo").innerText = `🔒 Username locked for ${remainingDays} more days.`;
         } else {
             if (currentUsername) {
                 document.getElementById("usernameInput").value = currentUsername;
             }
-            document.getElementById("lockTimerInfo").innerText = "⚠️ You can change username once every 14 days.";
+            document.getElementById("lockTimerInfo").innerText = "⚠️ You can change your username once every 14 days.";
         }
     }
 
@@ -515,192 +361,68 @@
         if (inputVal !== "") {
             currentUsername = inputVal;
             lockTimestamp = Date.now();
-            localStorage.setItem("chat_username", currentUsername);
-            localStorage.setItem("chat_username_lock_time", lockTimestamp);
+            localStorage.setItem("insta_chat_username", currentUsername);
+            localStorage.setItem("insta_chat_username_lock", lockTimestamp);
             checkUsernameLock();
         }
     }
 
     checkUsernameLock();
 
-    // Send Message Logic
+    // Send Live Message
     function sendMessage() {
         if (!currentUsername) {
-            alert("Please set a username first!");
+            alert("Please set your username first!");
             return;
         }
         const textInput = document.getElementById("messageInput");
-        const messageText = textInput.value.trim();
+        const msgText = textInput.value.trim();
 
-        if (messageText !== "") {
+        if (msgText !== "") {
             chatRef.push({
                 sender: currentUsername,
-                text: messageText,
+                text: msgText,
                 timestamp: Date.now()
             });
             textInput.value = "";
         }
     }
 
-    // Delete / Unsend Message Logic
-    function deleteMessage(key) {
-        if (confirm("Do you want to unsend this message?")) {
+    // Unsend Message
+    function unsendMessage(key) {
+        if (confirm("Unsend message?")) {
             chatRef.child(key).remove();
         }
     }
 
-    // Real-time Messages Listener
+    // Live Message Sync Listener
     chatRef.on("value", (snapshot) => {
-        const messagesContainer = document.getElementById("chatMessages");
-        messagesContainer.innerHTML = "";
+        const container = document.getElementById("chatMessages");
+        container.innerHTML = "";
 
         snapshot.forEach((childSnapshot) => {
             const key = childSnapshot.key;
             const data = childSnapshot.val();
             const isMe = data.sender === currentUsername;
 
-            const row = document.createElement("div");
-            row.className = `message-row ${isMe ? 'sent' : 'received'}`;
+            const msgRow = document.createElement("div");
+            msgRow.className = `msg-row ${isMe ? 'sent' : 'received'}`;
 
-            let deleteBtnHtml = isMe ? `<button class="delete-btn" title="Unsend Message" onclick="deleteMessage('${key}')">🗑️</button>` : '';
+            const unsendBtnHtml = isMe ? `<button class="unsend-btn" title="Unsend" onclick="unsendMessage('${key}')">Unsend</button>` : '';
 
-            row.innerHTML = `
-                <div class="msg-bubble-insta">
-                    <div class="msg-sender-name">@${data.sender}</div>
+            msgRow.innerHTML = `
+                <div class="msg-bubble">
+                    <div class="sender-tag">@${data.sender}</div>
                     <div>${data.text}</div>
                 </div>
-                ${deleteBtnHtml}
+                ${unsendBtnHtml}
             `;
 
-            messagesContainer.appendChild(row);
+            container.appendChild(msgRow);
         });
 
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    });
-
-    // --- THREE.JS 3D ENGINE ---
-    const canvas = document.getElementById('webgl-bg');
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
-
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-    camera.position.z = 30;
-
-    // 1. 3D Floating Hearts Creation
-    const heartShape = new THREE.Shape();
-    const x = 0, y = 0;
-    heartShape.moveTo(x + 0.5, y + 0.5);
-    heartShape.bezierCurveTo(x + 0.5, y + 0.5, x + 0.4, y, x, y);
-    heartShape.bezierCurveTo(x - 0.6, y, x - 0.6, y + 0.7, x - 0.6, y + 0.7);
-    heartShape.bezierCurveTo(x - 0.6, y + 1.1, x - 0.3, y + 1.54, x + 0.5, y + 1.9);
-    heartShape.bezierCurveTo(x + 1.3, y + 1.54, x + 1.6, y + 1.1, x + 1.6, y + 0.7);
-    heartShape.bezierCurveTo(x + 1.6, y, x + 1.4, y, x + 0.5, y + 0.5);
-
-    const extrudeSettings = { depth: 0.4, bevelEnabled: true, bevelSegments: 3, steps: 1, bevelSize: 0.1, bevelThickness: 0.1 };
-    const heartGeometry = new THREE.ExtrudeGeometry(heartShape, extrudeSettings);
-
-    const heartMaterial = new THREE.MeshPhongMaterial({
-        color: 0xff2a75,
-        emissive: 0x880e4f,
-        shininess: 100,
-        side: THREE.DoubleSide
-    });
-
-    const heartsGroup = new THREE.Group();
-    const hearts = [];
-
-    for (let i = 0; i < 35; i++) {
-        const mesh = new THREE.Mesh(heartGeometry, heartMaterial);
-        mesh.position.x = (Math.random() - 0.5) * 80;
-        mesh.position.y = (Math.random() - 0.5) * 80;
-        mesh.position.z = (Math.random() - 0.5) * 50;
-        
-        const scale = Math.random() * 0.8 + 0.4;
-        mesh.scale.set(scale, scale, scale);
-        mesh.rotation.x = Math.PI;
-        mesh.rotation.y = Math.random() * Math.PI;
-
-        mesh.userData = {
-            speedY: Math.random() * 0.05 + 0.02,
-            rotSpeedX: (Math.random() - 0.5) * 0.02,
-            rotSpeedY: (Math.random() - 0.5) * 0.02
-        };
-
-        hearts.push(mesh);
-        heartsGroup.add(mesh);
-    }
-    scene.add(heartsGroup);
-
-    // 2. 3D Stars Field
-    const starsGeometry = new THREE.BufferGeometry();
-    const starsCount = 600;
-    const starPositions = new Float32Array(starsCount * 3);
-
-    for (let i = 0; i < starsCount * 3; i++) {
-        starPositions[i] = (Math.random() - 0.5) * 120;
-    }
-
-    starsGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
-    const starsMaterial = new THREE.PointsMaterial({
-        color: 0xffb6c1,
-        size: 0.6,
-        transparent: true,
-        opacity: 0.8
-    });
-    const starField = new THREE.Points(starsGeometry, starsMaterial);
-    scene.add(starField);
-
-    // Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
-    scene.add(ambientLight);
-
-    const pointLight = new THREE.PointLight(0xff2a75, 2, 100);
-    pointLight.position.set(10, 20, 20);
-    scene.add(pointLight);
-
-    // Mouse Parallax Effect
-    let mouseX = 0, mouseY = 0;
-    window.addEventListener('mousemove', (e) => {
-        mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
-        mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
-    });
-
-    // Animation Loop
-    function animate() {
-        requestAnimationFrame(animate);
-
-        // Hearts movement
-        hearts.forEach(heart => {
-            heart.position.y += heart.userData.speedY;
-            heart.rotation.x += heart.userData.rotSpeedX;
-            heart.rotation.y += heart.userData.rotSpeedY;
-
-            if (heart.position.y > 40) {
-                heart.position.y = -40;
-                heart.position.x = (Math.random() - 0.5) * 80;
-            }
-        });
-
-        // Parallax Camera Smooth Rotation
-        camera.position.x += (mouseX * 5 - camera.position.x) * 0.05;
-        camera.position.y += (-mouseY * 5 - camera.position.y) * 0.05;
-        camera.lookAt(scene.position);
-
-        starField.rotation.y += 0.0005;
-
-        renderer.render(scene, camera);
-    }
-
-    animate();
-
-    // Window Resize Handler
-    window.addEventListener('resize', () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
+        // Auto scroll to latest message
+        container.scrollTop = container.scrollHeight;
     });
 </script>
 
