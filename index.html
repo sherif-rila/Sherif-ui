@@ -203,6 +203,13 @@
             align-items: center;
             justify-content: center;
             font-size: 22px;
+            overflow: hidden;
+        }
+
+        .album-art img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .song-info h4 {
@@ -307,13 +314,14 @@
         <div class="playlist-box">
             <h3>🎵 Rilasherif all Playlist</h3>
             <div id="playlist">
-                <!-- Ride or Die Song added here for all users -->
-                <div class="song-item" onclick="playPresetSong('nallaru po', 'Nallaru Po.mp3')">
-    <span>Nallaru Po.mp3</span> ▶
+                <div class="song-item" onclick="playPresetSong('KU LO SA - Oxlade', 'ku_lo_sa.mp3', 'album_cover.jpg', 'Oxlade')">
+                    <span>🔥 KU LO SA - Oxlade</span> ▶
                 </div>
+                <div class="song-item" onclick="playPresetSong('Nallaru Po', 'Nallaru Po.mp3', 'album_cover.jpg', 'Rila & Sherif')">
+                    <span>Nallaru Po.mp3</span> ▶
                 </div>
-                <div class="song-item" onclick="playPresetSong('Kannukulla', 'Kannukulla.mp3')">
-    <span>Kannukulla.mp3</span> ▶
+                <div class="song-item" onclick="playPresetSong('Kannukulla', 'Kannukulla.mp3', 'album_cover.jpg', 'Rila & Sherif')">
+                    <span>Kannukulla.mp3</span> ▶
                 </div>
             </div>
         </div>
@@ -349,20 +357,30 @@
 <!-- Spotify Style Bottom Audio Player Bar -->
 <div class="spotify-player-bar">
     <div class="now-playing">
-        <div class="album-art">🎧</div>
+        <div class="album-art" id="albumArtBox">
+            <img id="currentAlbumImg" src="album_cover.jpg" alt="Album Cover">
+        </div>
         <div class="song-info">
-            <h4 id="currentSongTitle">choose a song</h4>
-            <p>Rila & Sherif</p>
+            <h4 id="currentSongTitle">KU LO SA</h4>
+            <p id="currentArtist">Oxlade</p>
         </div>
     </div>
     <div class="player-controls">
-        <audio id="audioPlayer" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" controls></audio>
+        <audio id="audioPlayer" src="ku_lo_sa.mp3" controls></audio>
     </div>
 </div>
 
 <script>
-    function playPresetSong(title, url) {
+    function playPresetSong(title, url, imgUrl, artist) {
         document.getElementById('currentSongTitle').innerText = title;
+        document.getElementById('currentArtist').innerText = artist || 'Rila & Sherif';
+        
+        const imgTag = document.getElementById('currentAlbumImg');
+        if (imgUrl) {
+            imgTag.src = imgUrl;
+            imgTag.style.display = "block";
+        }
+
         const audio = document.getElementById('audioPlayer');
         audio.src = url;
         audio.play();
