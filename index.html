@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>rilasaadh - Spotify Style Romantic Journey</title>
+    <title>rilasherif - Spotify Style Romantic Journey</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
     <!-- Three.js Library for 3D Graphics -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -40,16 +40,16 @@
             background: rgba(20, 15, 38, 0.85);
             backdrop-filter: blur(16px);
             border-radius: 28px;
-            box-shadow: 0 20px 50px rgba(29, 185, 84, 0.2), 0 0 20px rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 50px rgba(255, 42, 117, 0.25), 0 0 20px rgba(255, 255, 255, 0.1);
             overflow: hidden;
-            border: 1.5px solid rgba(29, 185, 84, 0.3);
+            border: 1.5px solid rgba(255, 42, 117, 0.3);
             color: #fff;
             position: relative;
             z-index: 10;
         }
 
         header {
-            background: linear-gradient(135deg, rgba(29, 185, 84, 0.8), rgba(20, 20, 20, 0.9));
+            background: linear-gradient(135deg, rgba(255, 42, 117, 0.8), rgba(20, 20, 20, 0.9));
             text-align: center;
             padding: 40px 20px;
         }
@@ -58,7 +58,7 @@
             font-family: 'Great Vibes', cursive;
             font-size: 65px;
             margin-bottom: 5px;
-            text-shadow: 0 0 20px rgba(29, 185, 84, 0.9);
+            text-shadow: 0 0 20px rgba(255, 42, 117, 0.9);
         }
 
         header p.subtitle {
@@ -70,8 +70,8 @@
 
         .heart-badge {
             display: inline-block;
-            background: #1db954;
-            color: #000;
+            background: #ff2a75;
+            color: #fff;
             padding: 8px 25px;
             border-radius: 30px;
             font-weight: 700;
@@ -93,8 +93,8 @@
             align-items: center;
             justify-content: center;
             padding: 12px 26px;
-            background: #1db954;
-            color: #000 !important;
+            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+            color: #ffffff !important;
             text-decoration: none;
             font-weight: 600;
             font-size: 15px;
@@ -104,7 +104,7 @@
 
         .insta-btn:hover {
             transform: scale(1.05);
-            background: #1ed760;
+            box-shadow: 0 10px 25px rgba(220, 39, 67, 0.6);
         }
 
         .nav-tabs {
@@ -126,9 +126,9 @@
         }
 
         .tab-btn.active {
-            background: rgba(29, 185, 84, 0.2);
-            color: #1db954;
-            border-bottom: 3px solid #1db954;
+            background: rgba(255, 42, 117, 0.2);
+            color: #ff7eb3;
+            border-bottom: 3px solid #ff2a75;
         }
 
         .content-section {
@@ -142,14 +142,14 @@
 
         .story-card {
             background: rgba(255, 255, 255, 0.05);
-            border-left: 4px solid #1db954;
+            border-left: 4px solid #ff2a75;
             padding: 22px;
             margin-bottom: 22px;
             border-radius: 0 16px 16px 0;
         }
 
         .story-card h2 {
-            color: #1db954;
+            color: #ff7eb3;
             margin-bottom: 10px;
             font-size: 20px;
         }
@@ -163,8 +163,8 @@
         .quote-box {
             text-align: center;
             padding: 25px;
-            background: rgba(29, 185, 84, 0.15);
-            border: 1px solid rgba(29, 185, 84, 0.3);
+            background: rgba(255, 42, 117, 0.15);
+            border: 1px solid rgba(255, 42, 117, 0.3);
             color: white;
             border-radius: 18px;
             margin: 22px 0;
@@ -237,26 +237,27 @@
         }
 
         .playlist-box h3 {
-            color: #1db954;
+            color: #ff7eb3;
             font-size: 15px;
             margin-bottom: 10px;
         }
 
         .song-item {
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 6px;
-            margin-bottom: 5px;
-            font-size: 13px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 14px;
             cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            transition: 0.2s;
         }
 
         .song-item:hover {
-            background: rgba(29, 185, 84, 0.15);
-            color: #1db954;
+            background: rgba(255, 42, 117, 0.2);
+            color: #ff7eb3;
         }
 
         footer {
@@ -269,7 +270,7 @@
         }
 
         footer span {
-            color: #1db954;
+            color: #ff4081;
             font-weight: 600;
         }
     </style>
@@ -280,13 +281,13 @@
 
 <div class="container">
     <header>
-        <h1>rilasaadh</h1>
+        <h1>rilasherif</h1>
         <p class="subtitle">A Magical Journey of Love</p>
-        <div class="heart-badge">Rila 💗 Saadh</div>
+        <div class="heart-badge">Rila 💗 Sherif</div>
     </header>
 
     <div class="insta-container">
-        <a href="https://instagram.com/saadh" target="_blank" rel="noopener noreferrer" class="insta-btn">📸 @saadh</a>
+        <a href="https://instagram.com/sh.xrif" target="_blank" rel="noopener noreferrer" class="insta-btn">📸 @sh.xrif</a>
         <a href="https://instagram.com/yk.m0i" target="_blank" rel="noopener noreferrer" class="insta-btn">📸 @yk.m0i</a>
     </div>
 
@@ -299,17 +300,19 @@
     <div id="story" class="content-section active">
         <div class="story-card">
             <h2>01. Two Hearts, One Connection</h2>
-            <p>Life brings many people into our path, but only a special few stay in our hearts forever. When Rila and Saadh met, a sweet unspoken connection began.</p>
+            <p>Life brings many people into our path, but only a special few stay in our hearts forever. When Rila and Sherif met, a sweet unspoken connection began. A simple smile turned into deep conversations, and slowly, friendship grew into a priceless bond of love.</p>
         </div>
-        <div class="quote-box">"In a sky full of stars, my eyes will always search for you — Rila & Saadh."</div>
+        <div class="quote-box">"In a sky full of stars, my eyes will always search for you — Rila & Sherif."</div>
         
-        <!-- Spotify Style Playlist section inside the page -->
         <div class="playlist-box">
-            <h3>🟢 Spotify Vibe Playlist</h3>
+            <h3>🎵 Rilasherif Playlist</h3>
             <div id="playlist">
-                <!-- உங்களது பாடல்களின் நேரடி லின்க்குகளை இங்கே சேர்க்கலாம் -->
+                <!-- Ride or Die Song added here for all users -->
+                <div class="song-item" onclick="playPresetSong('Ride or Die', 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3')">
+                    <span>🔥 Ride or Die</span> ▶
+                </div>
                 <div class="song-item" onclick="playPresetSong('Our Special Theme', 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3')">
-                    <span>🎵 Our Special Theme (Sample)</span> ▶
+                    <span>🎵 Our Special Theme</span> ▶
                 </div>
             </div>
         </div>
@@ -318,19 +321,27 @@
     <div id="feelings" class="content-section">
         <div class="story-card">
             <h2>Special Memories 💖</h2>
-            <p>🌸 <b>Sweet Conversations:</b> Spending endless hours talking.<br><br>☕ <b>Caring For Each Other:</b> Being the comfort zone.</p>
+            <p>
+                🌸 <b>Sweet Conversations:</b> Spending endless hours talking about everything and nothing.<br><br>
+                ☕ <b>Caring For Each Other:</b> Being the comfort zone whenever life gets stressful.<br><br>
+                ✨ <b>Unspoken Trust:</b> Believing in each other's dreams and always standing side by side.
+            </p>
         </div>
     </div>
 
     <div id="future" class="content-section">
         <div class="story-card">
             <h2>Looking Ahead Together 🌟</h2>
-            <p>✨ To always keep each other happy and smiling.<br><br>✨ To patiently build a future together.</p>
+            <p>
+                ✨ To always keep each other happy and smiling.<br><br>
+                ✨ To support each other's goals and ambitions.<br><br>
+                ✨ To patiently build a beautiful future together, step by step.
+            </p>
         </div>
     </div>
 
     <footer>
-        <p>Created with Love for <span>Rila & Saadh</span> | Spotify Edition</p>
+        <p>Created with Love for <span>Rila & Sherif</span> | Sweethearts</p>
     </footer>
 </div>
 
@@ -339,12 +350,12 @@
     <div class="now-playing">
         <div class="album-art">🎧</div>
         <div class="song-info">
-            <h4 id="currentSongTitle">Select a song</h4>
-            <p>Rila & Saadh</p>
+            <h4 id="currentSongTitle">Ride or Die</h4>
+            <p>Rila & Sherif</p>
         </div>
     </div>
     <div class="player-controls">
-        <audio id="audioPlayer" controls></audio>
+        <audio id="audioPlayer" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" controls></audio>
     </div>
 </div>
 
@@ -389,7 +400,7 @@
     heartShape.bezierCurveTo(x + 1.6, y, x + 1.4, y, x + 0.5, y + 0.5);
 
     const heartGeometry = new THREE.ExtrudeGeometry(heartShape, { depth: 0.4, bevelEnabled: true, bevelSize: 0.1 });
-    const heartMaterial = new THREE.MeshPhongMaterial({ color: 0x1db954, emissive: 0x0a5c25, shininess: 100 });
+    const heartMaterial = new THREE.MeshPhongMaterial({ color: 0xff2a75, emissive: 0x880e4f, shininess: 100 });
     const hearts = [];
 
     for (let i = 0; i < 25; i++) {
